@@ -1,10 +1,10 @@
-import { insertNode } from './tree-data-utils';
+import { insertNode, IInsertNodeParams } from './tree-data-utils';
 
 import { memoizedInsertNode } from './memoized-tree-data-utils';
 
 describe('insertNode', () => {
   it('should handle empty data', () => {
-    const params = {
+    const params: IInsertNodeParams<unknown> = {
       treeData: [],
       depth: 0,
       minimumTreeIndex: 0,
@@ -21,8 +21,7 @@ describe('insertNode', () => {
     expect(firstCall === secondCall).toEqual(true);
 
     expect(
-      memoizedInsertNode(params) ===
-        memoizedInsertNode({ ...params, treeData: [{}] })
+      memoizedInsertNode(params) === memoizedInsertNode({ ...params, treeData: [{}] })
     ).toEqual(false);
   });
 });

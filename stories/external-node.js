@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 /* eslint-disable react/no-multi-comp */
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -17,7 +18,7 @@ const externalNodeSpec = {
   // This needs to return an object with a property `node` in it.
   // Object rest spread is recommended to avoid side effects of
   // referencing the same object in different trees.
-  beginDrag: componentProps => ({ node: { ...componentProps.node } }),
+  beginDrag: (componentProps) => ({ node: { ...componentProps.node } }),
 };
 const externalNodeCollect = (connect /* , monitor */) => ({
   connectDragSource: connect.dragSource(),
@@ -26,7 +27,7 @@ const externalNodeCollect = (connect /* , monitor */) => ({
   // isDragging: monitor.isDragging(),
   // didDrop: monitor.didDrop(),
 });
-class externalNodeBaseComponent extends Component {
+class ExternalNodeBaseComponent extends Component {
   render() {
     const { connectDragSource, node } = this.props;
 
@@ -45,7 +46,7 @@ class externalNodeBaseComponent extends Component {
     );
   }
 }
-externalNodeBaseComponent.propTypes = {
+ExternalNodeBaseComponent.propTypes = {
   node: PropTypes.shape({ title: PropTypes.string }).isRequired,
   connectDragSource: PropTypes.func.isRequired,
 };
@@ -53,7 +54,7 @@ const YourExternalNodeComponent = DragSource(
   externalNodeType,
   externalNodeSpec,
   externalNodeCollect
-)(externalNodeBaseComponent);
+)(ExternalNodeBaseComponent);
 
 class App extends Component {
   constructor(props) {
@@ -71,12 +72,11 @@ class App extends Component {
           <div style={{ height: 300 }}>
             <SortableTree
               treeData={this.state.treeData}
-              onChange={treeData => this.setState({ treeData })}
+              onChange={(treeData) => this.setState({ treeData })}
               dndType={externalNodeType}
             />
           </div>
-          <YourExternalNodeComponent node={{ title: 'Baby Rabbit' }} />← drag
-          this
+          <YourExternalNodeComponent node={{ title: 'Baby Rabbit' }} />← drag this
         </div>
       </DndProvider>
     );

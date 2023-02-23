@@ -1,3 +1,4 @@
+import { TGetNodeKey, TreeItem } from 'src/models';
 import {
   getVisibleNodeCount,
   getVisibleNodeInfoAtIndex,
@@ -14,6 +15,7 @@ import {
   getDescendantCount,
   find,
   toggleExpandedForAll,
+  IWalkCallbackParams,
 } from './tree-data-utils';
 
 const keyFromTreeIndex = ({ treeIndex }) => treeIndex;
@@ -60,6 +62,7 @@ describe('getVisibleNodeCount', () => {
                 children: [
                   {
                     expanded: true,
+                    // @ts-ignore
                     children: () => ({ key: 1 }),
                   },
                   {},
@@ -432,15 +435,9 @@ describe('getNodeAtPath', () => {
 
 describe('getFlatDataFromTree', () => {
   it('should handle empty data', () => {
-    expect(
-      getFlatDataFromTree({ treeData: [], getNodeKey: keyFromTreeIndex })
-    ).toEqual([]);
-    expect(
-      getFlatDataFromTree({ treeData: null, getNodeKey: keyFromTreeIndex })
-    ).toEqual([]);
-    expect(
-      getFlatDataFromTree({ treeData: undefined, getNodeKey: keyFromTreeIndex })
-    ).toEqual([]);
+    expect(getFlatDataFromTree({ treeData: [], getNodeKey: keyFromTreeIndex })).toEqual([]);
+    expect(getFlatDataFromTree({ treeData: null, getNodeKey: keyFromTreeIndex })).toEqual([]);
+    expect(getFlatDataFromTree({ treeData: undefined, getNodeKey: keyFromTreeIndex })).toEqual([]);
   });
 
   it('should handle flat data', () => {
@@ -674,9 +671,7 @@ describe('getFlatDataFromTree', () => {
 
 describe('changeNodeAtPath', () => {
   it('should handle empty data', () => {
-    const noChildrenError = new Error(
-      'Path referenced children of node with no children.'
-    );
+    const noChildrenError = new Error('Path referenced children of node with no children.');
     const noNodeError = new Error('No node found at the given path.');
     expect(() =>
       changeNodeAtPath({
@@ -788,9 +783,7 @@ describe('changeNodeAtPath', () => {
       getNodeKey: keyFromTreeIndex,
     });
 
-    expect(result[0].children[1].children[2].children[0].food).toEqual(
-      'pancake'
-    );
+    expect(result[0].children[1].children[2].children[0].food).toEqual('pancake');
   });
 
   it('should handle adding children to the root', () => {
@@ -1057,9 +1050,7 @@ describe('addNodeUnderParent', () => {
       getNodeKey: keyFromKey,
     });
 
-    expect(result.treeData[0].children[0].children[2]).toEqual(
-      nestedParams.newNode
-    );
+    expect(result.treeData[0].children[0].children[2]).toEqual(nestedParams.newNode);
     expect(result.treeIndex).toEqual(4);
   });
 
@@ -1070,9 +1061,7 @@ describe('addNodeUnderParent', () => {
       getNodeKey: keyFromKey,
     });
 
-    expect(result.treeData[0].children[0].children[1].children[1]).toEqual(
-      nestedParams.newNode
-    );
+    expect(result.treeData[0].children[0].children[1].children[1]).toEqual(nestedParams.newNode);
     expect(result.treeIndex).toEqual(5);
   });
 
@@ -1094,9 +1083,7 @@ describe('addNodeUnderParent', () => {
       getNodeKey: keyFromTreeIndex,
     });
 
-    expect(result.treeData[0].children[0].children[2]).toEqual(
-      nestedParams.newNode
-    );
+    expect(result.treeData[0].children[0].children[2]).toEqual(nestedParams.newNode);
     expect(result.treeIndex).toEqual(4);
   });
 
@@ -1107,9 +1094,7 @@ describe('addNodeUnderParent', () => {
       getNodeKey: keyFromTreeIndex,
     });
 
-    expect(result.treeData[0].children[0].children[1].children[1]).toEqual(
-      nestedParams.newNode
-    );
+    expect(result.treeData[0].children[0].children[1].children[1]).toEqual(nestedParams.newNode);
     expect(result.treeIndex).toEqual(5);
   });
 
@@ -1120,16 +1105,10 @@ describe('addNodeUnderParent', () => {
       getNodeKey: keyFromKey,
     });
 
-    const [
-      existingChild0,
-      existingChild1,
-      expectedNewNode,
-    ] = result.treeData[0].children;
+    const [existingChild0, existingChild1, expectedNewNode] = result.treeData[0].children;
 
     expect(expectedNewNode).toEqual(nestedParams.newNode);
-    expect([existingChild0, existingChild1]).toEqual(
-      nestedParams.treeData[0].children
-    );
+    expect([existingChild0, existingChild1]).toEqual(nestedParams.treeData[0].children);
   });
 
   it('should add new node as first child if addAsFirstChild is true', () => {
@@ -1372,9 +1351,7 @@ describe('insertNode', () => {
       minimumTreeIndex: 5,
     });
 
-    expect(result.treeData[0].children[0].children[3]).toEqual(
-      nestedParams.newNode
-    );
+    expect(result.treeData[0].children[0].children[3]).toEqual(nestedParams.newNode);
     expect(result.treeIndex).toEqual(5);
     expect(result.path).toEqual([0, 1, 'new']);
 
@@ -1385,9 +1362,7 @@ describe('insertNode', () => {
       minimumTreeIndex: 5,
     });
 
-    expect(result.treeData[0].children[0].children[2]).toEqual(
-      nestedParams.newNode
-    );
+    expect(result.treeData[0].children[0].children[2]).toEqual(nestedParams.newNode);
     expect(result.treeIndex).toEqual(5);
     expect(result.path).toEqual([0, 1, 'new']);
   });
@@ -1399,9 +1374,7 @@ describe('insertNode', () => {
       minimumTreeIndex: 3,
     });
 
-    expect(result.treeData[0].children[0].children[0].children[0]).toEqual(
-      nestedParams.newNode
-    );
+    expect(result.treeData[0].children[0].children[0].children[0]).toEqual(nestedParams.newNode);
     expect(result.treeIndex).toEqual(3);
     expect(result.path).toEqual([0, 1, 2, 'new']);
   });
@@ -1409,10 +1382,7 @@ describe('insertNode', () => {
   it('should handle nested data #4', () => {
     expect(
       insertNode({
-        treeData: [
-          { key: 0, expanded: true, children: [{ key: 1 }] },
-          { key: 2 },
-        ],
+        treeData: [{ key: 0, expanded: true, children: [{ key: 1 }] }, { key: 2 }],
         newNode: { key: 'new' },
         depth: 1,
         minimumTreeIndex: 3,
@@ -1440,10 +1410,7 @@ describe('insertNode', () => {
       })
     ).toEqual({
       parentNode: { expanded: true, children: [{}, { key: 'new' }, {}] },
-      treeData: [
-        { children: [{}] },
-        { expanded: true, children: [{}, { key: 'new' }, {}] },
-      ],
+      treeData: [{ children: [{}] }, { expanded: true, children: [{}, { key: 'new' }, {}] }],
       treeIndex: 3,
       path: [1, 3],
     });
@@ -1472,10 +1439,7 @@ describe('insertNode', () => {
   it('should work with a preceding node with children #3', () => {
     expect(
       insertNode({
-        treeData: [
-          { children: [{}, {}, {}, {}] },
-          { expanded: true, children: [{}, {}] },
-        ],
+        treeData: [{ children: [{}, {}, {}, {}] }, { expanded: true, children: [{}, {}] }],
         newNode: { key: 'new' },
         depth: 2,
         minimumTreeIndex: 4,
@@ -1535,7 +1499,7 @@ describe('insertNode', () => {
 
 describe('walk', () => {
   it('should handle empty data', () => {
-    [[], null, undefined].forEach(treeData => {
+    [[], null, undefined].forEach((treeData) => {
       expect(() =>
         walk({
           treeData,
@@ -1650,8 +1614,8 @@ describe('getTreeFromFlatData', () => {
   const rootKey = -1;
   const argDefaults = {
     rootKey,
-    getKey: node => node.key,
-    getParentKey: node => node.parentKey,
+    getKey: (node) => node.key,
+    getParentKey: (node) => node.parentKey,
   };
 
   const checkFunction = ({ flatData, expected }) => {
@@ -1699,7 +1663,10 @@ describe('getTreeFromFlatData', () => {
   it('should handle [depth == 2] data', () => {
     [
       {
-        flatData: [{ key: 1, parentKey: rootKey }, { key: 2, parentKey: 1 }],
+        flatData: [
+          { key: 1, parentKey: rootKey },
+          { key: 2, parentKey: 1 },
+        ],
         expected: [
           {
             key: 1,
@@ -1764,7 +1731,10 @@ describe('getTreeFromFlatData', () => {
               {
                 key: 2,
                 parentKey: 1,
-                children: [{ key: 4, parentKey: 2 }, { key: 3, parentKey: 2 }],
+                children: [
+                  { key: 4, parentKey: 2 },
+                  { key: 3, parentKey: 2 },
+                ],
               },
               { key: 6, parentKey: 1 },
             ],
@@ -1776,12 +1746,18 @@ describe('getTreeFromFlatData', () => {
 });
 
 describe('map', () => {
-  const checkFunction = ({
+  const checkFunction = <T>({
     treeData,
     getNodeKey,
     callback,
     ignoreCollapsed,
     expected,
+  }: {
+    treeData?: TreeItem<T>[];
+    getNodeKey: TGetNodeKey<T>;
+    callback: (data: IWalkCallbackParams<T>) => TreeItem<T>;
+    ignoreCollapsed?: boolean;
+    expected: TreeItem<T>[];
   }) => {
     expect(
       map({
@@ -1813,7 +1789,7 @@ describe('map', () => {
         callback: ({ node }) => node,
         expected: [],
       },
-    ].forEach(checkFunction);
+    ].forEach((test) => checkFunction(test));
   });
 
   it('can return tree as-is', () => {
@@ -1855,8 +1831,7 @@ describe('map', () => {
     [
       {
         getNodeKey: keyFromKey,
-        callback: ({ node }) =>
-          node.key === 1 ? { ...node, children: [] } : node,
+        callback: ({ node }) => (node.key === 1 ? { ...node, children: [] } : node),
         treeData: [
           {
             key: 1,
@@ -2028,9 +2003,9 @@ describe('isDescendant', () => {
   });
 
   it('should work deeper in the tree', () => {
-    expect(
-      isDescendant(treeData[0].children[0], treeData[0].children[0].children[1])
-    ).toEqual(true);
+    expect(isDescendant(treeData[0].children[0], treeData[0].children[0].children[1])).toEqual(
+      true
+    );
   });
 });
 
@@ -2062,12 +2037,8 @@ describe('getDepth', () => {
 describe('getDescendantCount', () => {
   it('should count flat data', () => {
     expect(getDescendantCount({ ignoreCollapsed: false, node: {} })).toEqual(0);
-    expect(
-      getDescendantCount({ ignoreCollapsed: false, node: { children: [] } })
-    ).toEqual(0);
-    expect(
-      getDescendantCount({ ignoreCollapsed: false, node: { children: [{}] } })
-    ).toEqual(1);
+    expect(getDescendantCount({ ignoreCollapsed: false, node: { children: [] } })).toEqual(0);
+    expect(getDescendantCount({ ignoreCollapsed: false, node: { children: [{}] } })).toEqual(1);
     expect(
       getDescendantCount({
         ignoreCollapsed: false,
@@ -2082,12 +2053,8 @@ describe('getDescendantCount', () => {
       children: [{}, { children: [{}] }, {}],
     };
 
-    expect(
-      getDescendantCount({ ignoreCollapsed: false, node: nested })
-    ).toEqual(4);
-    expect(getDescendantCount({ ignoreCollapsed: true, node: nested })).toEqual(
-      3
-    );
+    expect(getDescendantCount({ ignoreCollapsed: false, node: nested })).toEqual(4);
+    expect(getDescendantCount({ ignoreCollapsed: true, node: nested })).toEqual(3);
   });
 });
 
@@ -2111,15 +2078,11 @@ describe('find', () => {
     expect(result.matches).toEqual([]);
 
     result = find({ ...commonArgs, treeData: [{ key: 42 }] });
-    expect(result.matches).toEqual([
-      { node: { key: 42 }, treeIndex: 0, path: [42] },
-    ]);
+    expect(result.matches).toEqual([{ node: { key: 42 }, treeIndex: 0, path: [42] }]);
     expect(result.matches[commonArgs.searchFocusOffset].treeIndex).toEqual(0);
 
     result = find({ ...commonArgs, treeData: [{ key: 41 }, { key: 42 }] });
-    expect(result.matches).toEqual([
-      { node: { key: 42 }, treeIndex: 1, path: [42] },
-    ]);
+    expect(result.matches).toEqual([{ node: { key: 42 }, treeIndex: 1, path: [42] }]);
     expect(result.matches[commonArgs.searchFocusOffset].treeIndex).toEqual(1);
 
     result = find({ ...commonArgs, treeData: [{ key: 42 }, { key: 42 }] });
@@ -2191,20 +2154,14 @@ describe('find', () => {
 
     result = find({
       ...commonArgs,
-      treeData: [
-        {},
-        { children: [{ key: 42, expanded: true, children: [{ key: 42 }] }] },
-      ],
+      treeData: [{}, { children: [{ key: 42, expanded: true, children: [{ key: 42 }] }] }],
     });
     expect(result.matches.length).toEqual(2);
     expect(result.matches[commonArgs.searchFocusOffset].treeIndex).toEqual(2);
 
     result = find({
       ...commonArgs,
-      treeData: [
-        {},
-        { children: [{ key: 1, expanded: true, children: [{ key: 1 }] }] },
-      ],
+      treeData: [{}, { children: [{ key: 1, expanded: true, children: [{ key: 1 }] }] }],
     });
     expect(result.matches.length).toEqual(0);
   });

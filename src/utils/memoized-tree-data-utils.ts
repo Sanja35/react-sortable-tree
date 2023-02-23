@@ -1,17 +1,13 @@
-import {
-  insertNode,
-  getDescendantCount,
-  getFlatDataFromTree,
-} from './tree-data-utils';
+import { insertNode, getDescendantCount, getFlatDataFromTree } from './tree-data-utils';
 
-const memoize = f => {
-  let savedArgsArray = [];
-  let savedKeysArray = [];
-  let savedResult = null;
+const memoize = <F extends (...args: any) => any>(f: F) => {
+  let savedArgsArray: any[] = [];
+  let savedKeysArray: string[] = [];
+  let savedResult: any = null;
 
-  return args => {
+  return (args: any) => {
     const keysArray = Object.keys(args).sort();
-    const argsArray = keysArray.map(key => args[key]);
+    const argsArray = keysArray.map((key) => args[key]);
 
     // If the arguments for the last insert operation are different than this time,
     // recalculate the result

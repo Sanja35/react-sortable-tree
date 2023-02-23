@@ -28,7 +28,7 @@ export default class App extends Component {
         <div style={{ height: 300 }}>
           <SortableTree
             treeData={this.state.treeData}
-            onChange={treeData => this.setState({ treeData })}
+            onChange={(treeData) => this.setState({ treeData })}
             getNodeKey={getNodeKey}
             generateNodeProps={({ node, path }) => {
               const rootLevelIndex =
@@ -47,15 +47,11 @@ export default class App extends Component {
                 style: {
                   boxShadow: `0 0 0 4px ${playerColor.toLowerCase()}`,
                   textShadow:
-                    path.length === 1
-                      ? `1px 1px 1px ${playerColor.toLowerCase()}`
-                      : 'none',
+                    path.length === 1 ? `1px 1px 1px ${playerColor.toLowerCase()}` : 'none',
                 },
-                title: `${playerColor} ${
-                  path.length === 1 ? 'Captain' : node.position
-                }`,
+                title: `${playerColor} ${path.length === 1 ? 'Captain' : node.position}`,
                 onClick: () => {
-                  this.setState(state => ({
+                  this.setState((state) => ({
                     treeData: changeNodeAtPath({
                       treeData: state.treeData,
                       path,

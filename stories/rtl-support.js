@@ -31,7 +31,7 @@ export default class App extends Component {
         <SortableTree
           rowDirection="rtl"
           treeData={this.state.treeData}
-          onChange={treeData => this.setState({ treeData })}
+          onChange={(treeData) => this.setState({ treeData })}
         />
       </div>
     );

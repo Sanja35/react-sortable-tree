@@ -40,6 +40,4 @@ storiesOf('Advanced', module)
   .add('Drag out to remove', () => <DragOutToRemoveExample />)
   .add('onlyExpandSearchedNodes', () => <OnlyExpandSearchedNodesExample />)
   .add('Prevent some nodes from having children', () => <ChildlessNodes />)
-  .add('Minimal implementation without Dnd Context', () => (
-    <BarebonesExampleNoContext />
-  ));
+  .add('Minimal implementation without Dnd Context', () => <BarebonesExampleNoContext />);

@@ -8,7 +8,7 @@
 //    active && "class3"
 // ); // returns -> class1 class3";
 //
-export default function classnames(...classes) {
+export default function classnames(...classes: any[]) {
   // Use Boolean constructor as a filter callback
   // Allows for loose type truthy/falsey checks
   // Boolean("") === false;

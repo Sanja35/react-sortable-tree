@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["src", "stories", "test-config", "__mocks__"],
+  "exclude": ["node_modules", "dist"]
+}

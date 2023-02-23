@@ -10,9 +10,7 @@ export default class App extends Component {
     super(props);
 
     this.state = {
-      treeData: [
-        { title: 'Chicken', expanded: true, children: [{ title: 'Egg' }] },
-      ],
+      treeData: [{ title: 'Chicken', expanded: true, children: [{ title: 'Egg' }] }],
     };
   }
 
@@ -22,7 +20,7 @@ export default class App extends Component {
         <DndProvider backend={HTML5Backend}>
           <SortableTree
             treeData={this.state.treeData}
-            onChange={treeData => this.setState({ treeData })}
+            onChange={(treeData) => this.setState({ treeData })}
           />
         </DndProvider>
       </div>

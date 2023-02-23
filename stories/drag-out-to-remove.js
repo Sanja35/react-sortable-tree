@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 /* eslint-disable react/no-multi-comp */
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -26,7 +27,7 @@ const trashAreaCollect = (connect, monitor) => ({
 
 // The component will sit around the tree component and catch
 // nodes dragged out
-class trashAreaBaseComponent extends Component {
+class TrashAreaBaseComponent extends Component {
   render() {
     const { connectDropTarget, children, isOver } = this.props;
 
@@ -43,16 +44,16 @@ class trashAreaBaseComponent extends Component {
     );
   }
 }
-trashAreaBaseComponent.propTypes = {
+TrashAreaBaseComponent.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
   children: PropTypes.node.isRequired,
   isOver: PropTypes.bool.isRequired,
 };
-const TrashAreaComponent = DropTarget(
+const TrashArea = DropTarget(
   trashAreaType,
   trashAreaSpec,
   trashAreaCollect
-)(trashAreaBaseComponent);
+)(TrashAreaBaseComponent);
 
 class App extends Component {
   constructor(props) {
@@ -72,15 +73,15 @@ class App extends Component {
     return (
       <DndProvider backend={HTML5Backend}>
         <div>
-          <TrashAreaComponent>
+          <TrashArea>
             <div style={{ height: 250 }}>
               <SortableTree
                 treeData={this.state.treeData}
-                onChange={treeData => this.setState({ treeData })}
+                onChange={(treeData) => this.setState({ treeData })}
                 dndType={trashAreaType}
               />
             </div>
-          </TrashAreaComponent>
+          </TrashArea>
         </div>
       </DndProvider>
     );

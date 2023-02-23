@@ -1,9 +1,10 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import classnames from './utils/classnames';
+import { PlaceholderRendererProps } from './models';
 import './placeholder-renderer-default.css';
 
-const PlaceholderRendererDefault = ({ isOver, canDrop }) => (
+// eslint-disable-next-line react/function-component-definition
+const PlaceholderRendererDefault: React.FC<PlaceholderRendererProps> = ({ isOver, canDrop }) => (
   <div
     className={classnames(
       'rst__placeholder',
@@ -12,15 +13,5 @@ const PlaceholderRendererDefault = ({ isOver, canDrop }) => (
     )}
   />
 );
-
-PlaceholderRendererDefault.defaultProps = {
-  isOver: false,
-  canDrop: false,
-};
-
-PlaceholderRendererDefault.propTypes = {
-  isOver: PropTypes.bool,
-  canDrop: PropTypes.bool,
-};
 
 export default PlaceholderRendererDefault;

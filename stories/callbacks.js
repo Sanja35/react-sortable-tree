@@ -8,10 +8,7 @@ export default class App extends Component {
     super(props);
 
     this.state = {
-      treeData: [
-        { title: 'A', expanded: true, children: [{ title: 'B' }] },
-        { title: 'C' },
-      ],
+      treeData: [{ title: 'A', expanded: true, children: [{ title: 'B' }] }, { title: 'C' }],
       lastMovePrevPath: null,
       lastMoveNextPath: null,
       lastMoveNode: null,
@@ -32,11 +29,11 @@ export default class App extends Component {
         <div style={{ height: 300 }}>
           <SortableTree
             treeData={this.state.treeData}
-            onChange={treeData => this.setState({ treeData })}
+            onChange={(treeData) => this.setState({ treeData })}
             // Need to set getNodeKey to get meaningful ids in paths
             getNodeKey={({ node }) => `node${node.title}`}
-            onVisibilityToggle={args => recordCall('onVisibilityToggle', args)}
-            onMoveNode={args => {
+            onVisibilityToggle={(args) => recordCall('onVisibilityToggle', args)}
+            onMoveNode={(args) => {
               recordCall('onMoveNode', args);
               const { prevPath, nextPath, node } = args;
               this.setState({
@@ -45,13 +42,13 @@ export default class App extends Component {
                 lastMoveNode: node,
               });
             }}
-            onDragStateChanged={args => recordCall('onDragStateChanged', args)}
+            onDragStateChanged={(args) => recordCall('onDragStateChanged', args)}
           />
         </div>
         {lastMoveNode && (
           <div>
-            Node &quot;{lastMoveNode.title}&quot; moved from path [
-            {lastMovePrevPath.join(',')}] to path [{lastMoveNextPath.join(',')}
+            Node &quot;{lastMoveNode.title}&quot; moved from path [{lastMovePrevPath.join(',')}] to
+            path [{lastMoveNextPath.join(',')}
             ].
           </div>
         )}

@@ -64,7 +64,7 @@ export default class App extends Component {
           canDrop={canDrop}
           // Need to set getNodeKey to get meaningful ids in paths
           getNodeKey={({ node }) => node.id}
-          onChange={treeData => this.setState({ treeData })}
+          onChange={(treeData) => this.setState({ treeData })}
         />
       </div>
     );

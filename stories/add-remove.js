@@ -66,28 +66,26 @@ export default class App extends Component {
 
   render() {
     const getNodeKey = ({ treeIndex }) => treeIndex;
-    const getRandomName = () =>
-      firstNames[Math.floor(Math.random() * firstNames.length)];
+    const getRandomName = () => firstNames[Math.floor(Math.random() * firstNames.length)];
     return (
       <div>
         <div style={{ height: 300 }}>
           <SortableTree
             treeData={this.state.treeData}
-            onChange={treeData => this.setState({ treeData })}
+            onChange={(treeData) => this.setState({ treeData })}
             generateNodeProps={({ node, path }) => ({
               buttons: [
                 <button
+                  type="button"
                   onClick={() =>
-                    this.setState(state => ({
+                    this.setState((state) => ({
                       treeData: addNodeUnderParent({
                         treeData: state.treeData,
                         parentKey: path[path.length - 1],
                         expandParent: true,
                         getNodeKey,
                         newNode: {
-                          title: `${getRandomName()} ${
-                            node.title.split(' ')[0]
-                          }sson`,
+                          title: `${getRandomName()} ${node.title.split(' ')[0]}sson`,
                         },
                         addAsFirstChild: state.addAsFirstChild,
                       }).treeData,
@@ -97,8 +95,9 @@ export default class App extends Component {
                   Add Child
                 </button>,
                 <button
+                  type="button"
                   onClick={() =>
-                    this.setState(state => ({
+                    this.setState((state) => ({
                       treeData: removeNodeAtPath({
                         treeData: state.treeData,
                         path,
@@ -115,8 +114,9 @@ export default class App extends Component {
         </div>
 
         <button
+          type="button"
           onClick={() =>
-            this.setState(state => ({
+            this.setState((state) => ({
               treeData: state.treeData.concat({
                 title: `${getRandomName()} ${getRandomName()}sson`,
               }),
@@ -133,7 +133,7 @@ export default class App extends Component {
             type="checkbox"
             checked={this.state.addAsFirstChild}
             onChange={() =>
-              this.setState(state => ({
+              this.setState((state) => ({
                 addAsFirstChild: !state.addAsFirstChild,
               }))
             }

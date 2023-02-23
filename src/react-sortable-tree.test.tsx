@@ -1,18 +1,19 @@
 /* eslint-disable react/no-multi-comp */
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import renderer from 'react-test-renderer';
 import { mount } from 'enzyme';
 import { List } from 'react-virtualized';
-import { DndProvider, DndContext } from 'react-dnd';
-import TestBackend from 'react-dnd-test-backend';
-import HTML5Backend from 'react-dnd-html5-backend';
-import TouchBackend from 'react-dnd-touch-backend';
+import { DndProvider, DndContext, DndComponentClass } from 'react-dnd';
+import { TestBackend } from 'react-dnd-test-backend';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { TouchBackend } from 'react-dnd-touch-backend';
 import SortableTree, {
+  ReactSortableTree,
   SortableTreeWithoutDndContext,
 } from './react-sortable-tree';
 import TreeNode from './tree-node';
 import DefaultNodeRenderer from './node-renderer-default';
+import { ReactSortableTreeProps, NodeRenderer } from './models';
 
 describe('<SortableTree />', () => {
   it('should render tree correctly', () => {
@@ -46,19 +47,14 @@ describe('<SortableTree />', () => {
 
     // Single Nested
     wrapper = mount(
-      <SortableTree
-        treeData={[{ expanded: true, children: [{}] }]}
-        onChange={() => {}}
-      />
+      <SortableTree treeData={[{ expanded: true, children: [{}] }]} onChange={() => {}} />
     );
     expect(wrapper.find(TreeNode).length).toEqual(2);
 
     // Double Nested
     wrapper = mount(
       <SortableTree
-        treeData={[
-          { expanded: true, children: [{ expanded: true, children: [{}] }] },
-        ]}
+        treeData={[{ expanded: true, children: [{ expanded: true, children: [{}] }] }]}
         onChange={() => {}}
       />
     );
@@ -82,19 +78,14 @@ describe('<SortableTree />', () => {
 
     // Single Nested
     wrapper = mount(
-      <SortableTree
-        treeData={[{ expanded: false, children: [{}] }]}
-        onChange={() => {}}
-      />
+      <SortableTree treeData={[{ expanded: false, children: [{}] }]} onChange={() => {}} />
     );
     expect(wrapper.find(TreeNode).length).toEqual(1);
 
     // Double Nested
     wrapper = mount(
       <SortableTree
-        treeData={[
-          { expanded: false, children: [{ expanded: false, children: [{}] }] },
-        ]}
+        treeData={[{ expanded: false, children: [{ expanded: false, children: [{}] }] }]}
         onChange={() => {}}
       />
     );
@@ -117,7 +108,7 @@ describe('<SortableTree />', () => {
     const wrapper = mount(
       <SortableTree
         treeData={[{ title: 'a', children: [{ title: 'b' }] }]}
-        onChange={treeData => wrapper.setProps({ treeData })}
+        onChange={(treeData) => wrapper.setProps({ treeData })}
       />
     );
 
@@ -125,17 +116,11 @@ describe('<SortableTree />', () => {
     expect(wrapper.find(TreeNode).length).toEqual(1);
 
     // Expand node and check for the existence of the revealed child
-    wrapper
-      .find('.rst__expandButton')
-      .first()
-      .simulate('click');
+    wrapper.find('.rst__expandButton').first().simulate('click');
     expect(wrapper.find(TreeNode).length).toEqual(2);
 
     // Collapse node and make sure the child has been hidden
-    wrapper
-      .find('.rst__collapseButton')
-      .first()
-      .simulate('click');
+    wrapper.find('.rst__collapseButton').first().simulate('click');
     expect(wrapper.find(TreeNode).length).toEqual(1);
   });
 
@@ -162,10 +147,7 @@ describe('<SortableTree />', () => {
       />
     );
 
-    expect(wrapper.find('.rst__virtualScrollOverride').first()).toHaveStyle(
-      'borderWidth',
-      42
-    );
+    expect(wrapper.find('.rst__virtualScrollOverride').first()).toHaveStyle('borderWidth', 42);
   });
 
   it('should change height according to rowHeight prop', () => {
@@ -188,11 +170,7 @@ describe('<SortableTree />', () => {
 
   it('should toggle virtualization according to isVirtualized prop', () => {
     const virtualized = mount(
-      <SortableTree
-        treeData={[{ title: 'a' }, { title: 'b' }]}
-        onChange={() => {}}
-        isVirtualized
-      />
+      <SortableTree treeData={[{ title: 'a' }, { title: 'b' }]} onChange={() => {}} isVirtualized />
     );
 
     expect(virtualized.find(List).length).toEqual(1);
@@ -210,11 +188,7 @@ describe('<SortableTree />', () => {
 
   it('should change scaffold width according to scaffoldBlockPxWidth prop', () => {
     const wrapper = mount(
-      <SortableTree
-        treeData={[{ title: 'a' }]}
-        onChange={() => {}}
-        scaffoldBlockPxWidth={12}
-      />
+      <SortableTree treeData={[{ title: 'a' }]} onChange={() => {}} scaffoldBlockPxWidth={12} />
     );
 
     expect(wrapper.find('.rst__lineBlock')).toHaveStyle('width', 12);
@@ -239,40 +213,32 @@ describe('<SortableTree />', () => {
     const wrapper = mount(
       <SortableTree
         treeData={[{ title: 'a', children: [{ title: 'b' }] }]}
-        onChange={treeData => wrapper.setProps({ treeData })}
+        onChange={(treeData) => wrapper.setProps({ treeData })}
         onVisibilityToggle={({ expanded }) => {
           out = expanded ? 'expanded' : 'collapsed';
         }}
       />
     );
 
-    wrapper
-      .find('.rst__expandButton')
-      .first()
-      .simulate('click');
+    wrapper.find('.rst__expandButton').first().simulate('click');
     expect(out).toEqual('expanded');
-    wrapper
-      .find('.rst__collapseButton')
-      .first()
-      .simulate('click');
+    wrapper.find('.rst__collapseButton').first().simulate('click');
     expect(out).toEqual('collapsed');
   });
 
   it('should render with a custom `nodeContentRenderer`', () => {
-    class FakeNode extends Component {
+    type TTestNode = { title?: React.ReactNode };
+    class FakeNode extends Component<{ node: TTestNode }> {
       render() {
         return <div>{this.props.node.title}</div>;
       }
     }
-    FakeNode.propTypes = {
-      node: PropTypes.shape({ title: PropTypes.string }).isRequired,
-    };
 
     const wrapper = mount(
       <SortableTree
         treeData={[{ title: 'a' }]}
         onChange={() => {}}
-        nodeContentRenderer={FakeNode}
+        nodeContentRenderer={FakeNode as NodeRenderer}
       />
     );
 
@@ -309,7 +275,9 @@ describe('<SortableTree />', () => {
       />
     );
 
-    const tree = wrapper.find('ReactSortableTree').instance();
+    const tree = wrapper
+      .find('ReactSortableTree')
+      .instance() as ReactSortableTree<ReactSortableTreeProps>;
     expect(tree.state.searchMatches).toEqual([
       { node: { title: 'b' }, path: [0, 1], treeIndex: 1 },
       { node: { title: 'be' }, path: [2, 3], treeIndex: 3 },
@@ -345,7 +313,7 @@ describe('<SortableTree />', () => {
             children: [{ title: 'f', children: [{ title: 'dd' }] }],
           },
         ]}
-        onChange={treeData => wrapper.setProps({ treeData })}
+        onChange={(treeData) => wrapper.setProps({ treeData })}
         onlyExpandSearchedNodes
       />
     );
@@ -406,20 +374,14 @@ describe('<SortableTree />', () => {
     expect(
       mount(
         <DndProvider backend={HTML5Backend}>
-          <SortableTreeWithoutDndContext
-            treeData={[{ title: 'a' }]}
-            onChange={() => {}}
-          />
+          <SortableTreeWithoutDndContext treeData={[{ title: 'a' }]} onChange={() => {}} />
         </DndProvider>
       )
     ).toBeDefined();
     expect(
       mount(
         <DndProvider backend={TouchBackend}>
-          <SortableTreeWithoutDndContext
-            treeData={[{ title: 'a' }]}
-            onChange={() => {}}
-          />
+          <SortableTreeWithoutDndContext treeData={[{ title: 'a' }]} onChange={() => {}} />
         </DndProvider>
       )
     ).toBeDefined();
@@ -435,6 +397,8 @@ describe('<SortableTree />', () => {
         <DndContext.Consumer>
           {({ dragDropManager }) => {
             manager = dragDropManager;
+
+            return null;
           }}
         </DndContext.Consumer>
         <SortableTreeWithoutDndContext
@@ -449,14 +413,15 @@ describe('<SortableTree />', () => {
     const backend = manager.getBackend();
 
     // Retrieve our DnD-wrapped node component type
-    const wrappedNodeType = wrapper.find('ReactSortableTree').instance()
-      .nodeContentRenderer;
+    const wrappedNodeType = (
+      wrapper.find('ReactSortableTree').instance() as ReactSortableTree<ReactSortableTreeProps>
+    ).nodeContentRenderer;
 
     // And get the first such component
     const nodeInstance = wrapper
       .find(wrappedNodeType)
       .first()
-      .instance();
+      .instance() as unknown as DndComponentClass<any, any>;
 
     backend.simulateBeginDrag([nodeInstance.getHandlerId()]);
 

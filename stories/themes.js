@@ -37,8 +37,7 @@ export default class App extends Component {
         {
           title: (
             <div>
-              Simply set it to the <code>theme</code> prop and you&rsquo;re
-              done!
+              Simply set it to the <code>theme</code> prop and you&rsquo;re done!
             </div>
           ),
         },
@@ -52,7 +51,7 @@ export default class App extends Component {
         <SortableTree
           theme={FileExplorerTheme}
           treeData={this.state.treeData}
-          onChange={treeData => this.setState({ treeData })}
+          onChange={(treeData) => this.setState({ treeData })}
         />
       </div>
     );

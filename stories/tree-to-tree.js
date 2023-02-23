@@ -8,10 +8,7 @@ class App extends Component {
     super(props);
 
     this.state = {
-      treeData1: [
-        { title: 'node1', children: [{ title: 'Child node' }] },
-        { title: 'node2' },
-      ],
+      treeData1: [{ title: 'node1', children: [{ title: 'Child node' }] }, { title: 'node2' }],
       treeData2: [{ title: 'node3' }, { title: 'node4' }],
       shouldCopyOnOutsideDrop: false,
     };
@@ -34,7 +31,7 @@ class App extends Component {
         >
           <SortableTree
             treeData={this.state.treeData1}
-            onChange={treeData1 => this.setState({ treeData1 })}
+            onChange={(treeData1) => this.setState({ treeData1 })}
             dndType={externalNodeType}
             shouldCopyOnOutsideDrop={shouldCopyOnOutsideDrop}
           />
@@ -50,7 +47,7 @@ class App extends Component {
         >
           <SortableTree
             treeData={this.state.treeData2}
-            onChange={treeData2 => this.setState({ treeData2 })}
+            onChange={(treeData2) => this.setState({ treeData2 })}
             dndType={externalNodeType}
             shouldCopyOnOutsideDrop={shouldCopyOnOutsideDrop}
           />
@@ -65,7 +62,7 @@ class App extends Component {
               type="checkbox"
               id="should-copy"
               value={shouldCopyOnOutsideDrop}
-              onChange={event =>
+              onChange={(event) =>
                 this.setState({
                   shouldCopyOnOutsideDrop: event.target.checked,
                 })

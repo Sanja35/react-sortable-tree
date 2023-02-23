@@ -1,12 +1,17 @@
-import nodeResolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
-import babel from 'rollup-plugin-babel';
+import fs from 'fs';
+import path from 'path';
+import nodeResolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import babel from '@rollup/plugin-babel';
 import postcss from 'rollup-plugin-postcss';
+import typescript from '@rollup/plugin-typescript';
 
-import pkg from './package.json';
+const pkg = JSON.parse(
+  fs.readFileSync(new URL('./package.json', import.meta.url))
+);
 
 export default {
-  input: './src/index.js',
+  input: './src/index.ts',
   output: [
     {
       file: pkg.main,
@@ -31,12 +36,17 @@ export default {
   ],
   plugins: [
     nodeResolve(),
-    postcss({ extract: './style.css' }),
+    postcss({
+      extract: path.resolve('dist/style.css'),
+      minimize: true,
+    }),
+    typescript({ exclude: '**/*.test.(ts|tsx)'}),
     commonjs({
       include: 'node_modules/**',
     }),
     babel({
       exclude: 'node_modules/**',
+      babelHelpers: 'bundled',
     }),
   ],
 };
