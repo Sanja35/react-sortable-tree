@@ -28,7 +28,6 @@ export default {
     'react',
     'react-dom',
     'react-dnd',
-    'prop-types',
     'react-dnd-html5-backend',
     'frontend-collective-react-dnd-scrollzone',
     'react-virtualized',

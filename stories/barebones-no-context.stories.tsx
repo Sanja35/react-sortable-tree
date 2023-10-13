@@ -1,11 +1,15 @@
+import type { Meta, StoryObj } from '@storybook/react';
 import React, { Component } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { TreeItem } from '../src/models';
 import { SortableTreeWithoutDndContext as SortableTree } from '../src';
-// In your own app, you would need to use import styles once in the app
-// import 'react-sortable-tree/styles.css';
 
-export default class App extends Component {
+interface IStoryComponentState {
+  treeData: TreeItem[];
+}
+
+class App extends Component<any, IStoryComponentState> {
   constructor(props) {
     super(props);
 
@@ -27,3 +31,17 @@ export default class App extends Component {
     );
   }
 }
+
+const meta: Meta<typeof App> = {
+  title: 'Advanced',
+  component: App,
+};
+
+type Story = StoryObj<typeof App>;
+
+export const BarebonesExampleNoContext: Story = {
+  name: 'Minimal implementation without Dnd Context',
+  render: () => <App />,
+};
+
+export default meta;

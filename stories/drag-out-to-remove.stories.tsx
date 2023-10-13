@@ -1,33 +1,46 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable react/no-multi-comp */
-import PropTypes from 'prop-types';
+import type { Meta, StoryObj } from '@storybook/react';
 import React, { Component } from 'react';
-import { DndProvider, DropTarget } from 'react-dnd';
+import {
+  DndProvider,
+  DropTarget,
+  ConnectDropTarget,
+  DropTargetConnector,
+  DropTargetMonitor,
+  DropTargetSpec,
+} from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { TreeItem } from '../src/models';
 import { SortableTreeWithoutDndContext as SortableTree } from '../src';
 // In your own app, you would need to use import styles once in the app
 // import 'react-sortable-tree/styles.css';
 
 // -------------------------
 // Create an drop target component that can receive the nodes
-// https://react-dnd.github.io/react-dnd/docs-drop-target.html
 // -------------------------
 // This type must be assigned to the tree via the `dndType` prop as well
 const trashAreaType = 'yourNodeType';
-const trashAreaSpec = {
+const trashAreaSpec: DropTargetSpec<unknown> = {
   // The endDrag handler on the tree source will use some of the properties of
   // the source, like node, treeIndex, and path to determine where it was before.
   // The treeId must be changed, or it interprets it as dropping within itself.
   drop: (props, monitor) => ({ ...monitor.getItem(), treeId: 'trash' }),
 };
-const trashAreaCollect = (connect, monitor) => ({
+const trashAreaCollect = (connect: DropTargetConnector, monitor: DropTargetMonitor) => ({
   connectDropTarget: connect.dropTarget(),
   isOver: monitor.isOver({ shallow: true }),
 });
 
+interface ITrashAreaBaseComponentProps {
+  children: React.ReactNode;
+  connectDropTarget: ConnectDropTarget;
+  isOver: boolean;
+}
+
 // The component will sit around the tree component and catch
 // nodes dragged out
-class TrashAreaBaseComponent extends Component {
+class TrashAreaBaseComponent extends Component<ITrashAreaBaseComponentProps> {
   render() {
     const { connectDropTarget, children, isOver } = this.props;
 
@@ -44,18 +57,18 @@ class TrashAreaBaseComponent extends Component {
     );
   }
 }
-TrashAreaBaseComponent.propTypes = {
-  connectDropTarget: PropTypes.func.isRequired,
-  children: PropTypes.node.isRequired,
-  isOver: PropTypes.bool.isRequired,
-};
+
 const TrashArea = DropTarget(
   trashAreaType,
   trashAreaSpec,
   trashAreaCollect
 )(TrashAreaBaseComponent);
 
-class App extends Component {
+interface IStoryComponentState {
+  treeData: TreeItem[];
+}
+
+class App extends Component<unknown, IStoryComponentState> {
   constructor(props) {
     super(props);
 
@@ -88,4 +101,16 @@ class App extends Component {
   }
 }
 
-export default App;
+const meta: Meta<typeof App> = {
+  title: 'Advanced',
+  component: App,
+};
+
+type Story = StoryObj<typeof App>;
+
+export const DragOutToRemoveExample: Story = {
+  name: 'Drag out to remove',
+  render: () => <App />,
+};
+
+export default meta;

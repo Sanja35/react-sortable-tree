@@ -85,7 +85,7 @@ export default class DndManager<T> {
       dropTargetDepth = Math.min(path.length, dropTargetProps.path.length);
     }
 
-    let blocksOffset;
+    let blocksOffset: number;
     let dragSourceInitialDepth = (monitor.getItem().path || []).length;
 
     // When adding node from external source

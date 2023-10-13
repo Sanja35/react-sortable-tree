@@ -1,33 +1,45 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable react/no-multi-comp */
-import PropTypes from 'prop-types';
+import type { Meta, StoryObj } from '@storybook/react';
 import React, { Component } from 'react';
-import { DndProvider, DragSource } from 'react-dnd';
+import {
+  DndProvider,
+  DragSource,
+  ConnectDragSource,
+  DragSourceSpec,
+  DragSourceConnector,
+} from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { TreeItem } from '../src/models';
 import { SortableTreeWithoutDndContext as SortableTree } from '../src';
 // In your own app, you would need to use import styles once in the app
 // import 'react-sortable-tree/styles.css';
 
 // -------------------------
 // Create an drag source component that can be dragged into the tree
-// https://react-dnd.github.io/react-dnd/docs-drag-source.html
 // -------------------------
 // This type must be assigned to the tree via the `dndType` prop as well
 const externalNodeType = 'yourNodeType';
-const externalNodeSpec = {
+const externalNodeSpec: DragSourceSpec<{ node: TreeItem }, TreeItem> = {
   // This needs to return an object with a property `node` in it.
   // Object rest spread is recommended to avoid side effects of
   // referencing the same object in different trees.
   beginDrag: (componentProps) => ({ node: { ...componentProps.node } }),
 };
-const externalNodeCollect = (connect /* , monitor */) => ({
+const externalNodeCollect = (connect: DragSourceConnector /* , monitor */) => ({
   connectDragSource: connect.dragSource(),
   // Add props via react-dnd APIs to enable more visual
   // customization of your component
   // isDragging: monitor.isDragging(),
   // didDrop: monitor.didDrop(),
 });
-class ExternalNodeBaseComponent extends Component {
+
+interface IExternalNodeBaseComponentProps {
+  connectDragSource: ConnectDragSource;
+  node: TreeItem;
+}
+
+class ExternalNodeBaseComponent extends Component<IExternalNodeBaseComponentProps> {
   render() {
     const { connectDragSource, node } = this.props;
 
@@ -46,17 +58,18 @@ class ExternalNodeBaseComponent extends Component {
     );
   }
 }
-ExternalNodeBaseComponent.propTypes = {
-  node: PropTypes.shape({ title: PropTypes.string }).isRequired,
-  connectDragSource: PropTypes.func.isRequired,
-};
+
 const YourExternalNodeComponent = DragSource(
   externalNodeType,
   externalNodeSpec,
   externalNodeCollect
 )(ExternalNodeBaseComponent);
 
-class App extends Component {
+interface IStoryComponentState {
+  treeData: TreeItem[];
+}
+
+class App extends Component<unknown, IStoryComponentState> {
   constructor(props) {
     super(props);
 
@@ -83,4 +96,16 @@ class App extends Component {
   }
 }
 
-export default App;
+const meta: Meta<typeof App> = {
+  title: 'Advanced',
+  component: App,
+};
+
+type Story = StoryObj<typeof App>;
+
+export const ExternalNodeExample: Story = {
+  name: 'Drag from external source',
+  render: () => <App />,
+};
+
+export default meta;

@@ -1,4 +1,6 @@
+import type { Meta, StoryObj } from '@storybook/react';
 import React, { Component } from 'react';
+import { TreeItem } from '../src/models';
 import SortableTree, { addNodeUnderParent, removeNodeAtPath } from '../src';
 // In your own app, you would need to use import styles once in the app
 // import 'react-sortable-tree/styles.css';
@@ -54,7 +56,12 @@ const firstNames = [
   'Simon',
 ];
 
-export default class App extends Component {
+interface IStoryComponentState {
+  treeData: TreeItem[];
+  addAsFirstChild: boolean;
+}
+
+class App extends Component<unknown, IStoryComponentState> {
   constructor(props) {
     super(props);
 
@@ -85,7 +92,7 @@ export default class App extends Component {
                         expandParent: true,
                         getNodeKey,
                         newNode: {
-                          title: `${getRandomName()} ${node.title.split(' ')[0]}sson`,
+                          title: `${getRandomName()} ${(node.title as string).split(' ')[0]}sson`,
                         },
                         addAsFirstChild: state.addAsFirstChild,
                       }).treeData,
@@ -143,3 +150,17 @@ export default class App extends Component {
     );
   }
 }
+
+const meta: Meta<typeof App> = {
+  title: 'Basics',
+  component: App,
+};
+
+type Story = StoryObj<typeof App>;
+
+export const AddRemoveExample: Story = {
+  name: 'Add and remove nodes programmatically',
+  render: () => <App />,
+};
+
+export default meta;

@@ -1,6 +1,8 @@
 import { insertNode, getDescendantCount, getFlatDataFromTree } from './tree-data-utils';
 
-const memoize = <F extends (...args: any) => any>(f: F) => {
+const memoize = <F extends (...args: any) => ReturnType<F>>(
+  f: F
+): ((...args: any) => ReturnType<F>) => {
   let savedArgsArray: any[] = [];
   let savedKeysArray: string[] = [];
   let savedResult: any = null;

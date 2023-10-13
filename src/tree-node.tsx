@@ -27,7 +27,7 @@ function TreeNode({
 
   // Construct the scaffold representing the structure of the tree
   const scaffoldBlockCount = lowerSiblingCounts.length;
-  const scaffold = [];
+  const scaffold: JSX.Element[] = [];
   lowerSiblingCounts.forEach((lowerSiblingCount, i) => {
     let lineClass = '';
     if (lowerSiblingCount > 0) {
@@ -101,7 +101,7 @@ function TreeNode({
         highlightLineClass = 'rst__highlightLineVertical';
       }
 
-      let style;
+      let style: React.CSSProperties;
       if (rowDirection === 'rtl') {
         style = {
           width: scaffoldBlockPxWidth,
@@ -126,7 +126,7 @@ function TreeNode({
     }
   });
 
-  let style;
+  let style: React.CSSProperties;
   if (rowDirection === 'rtl') {
     style = { right: scaffoldBlockPxWidth * scaffoldBlockCount };
   } else {

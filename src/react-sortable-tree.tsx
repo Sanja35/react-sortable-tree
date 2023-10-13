@@ -26,6 +26,7 @@ import {
   memoizedInsertNode,
 } from './utils/memoized-tree-data-utils';
 import {
+  IWalkCallbackParams,
   changeNodeAtPath,
   find,
   insertNode,
@@ -43,15 +44,12 @@ import {
   ReactSortableTreeProps,
   ReactSortableTreeBaseProps,
   NumberOrStringArray,
+  NodeRendererProps,
 } from './models';
 
 type ReactSortableTreeDefaultProps = Required<
   Pick<ReactSortableTreeBaseProps, 'theme' | 'getNodeKey' | 'onVisibilityToggle' | 'onMoveNode'>
 >;
-// Pick<
-// typeof ReactSortableTree.defaultProps,
-// 'theme' | 'getNodeKey' | 'onVisibilityToggle' | 'onMoveNode'
-// >;
 
 let treeIdCounter = 1;
 
@@ -92,12 +90,12 @@ function mergeTheme<T>(
 }
 
 interface ReactSortableTreeState<T = {}> {
-  draggingTreeData: TreeItem<T> | null;
+  draggingTreeData: TreeItem<T>[] | null;
   draggedNode: ITreeNode<T> | null;
   draggedMinimumTreeIndex: number | null;
   draggedDepth: number | null;
   searchMatches: Array<NodeData<T>>;
-  searchFocusTreeIndex: null;
+  searchFocusTreeIndex: number | null;
   dragging: boolean;
 
   // props that need to be used in gDSFP or static functions will be stored here
@@ -114,7 +112,9 @@ export class ReactSortableTree<T> extends Component<
   ReactSortableTreeState<T>
 > {
   // eslint-disable-next-line react/static-property-placement
-  static defaultProps = {
+  static defaultProps: Partial<ReactSortableTreeProps> & {
+    treeNodeRenderer: React.ReactElement;
+  } = {
     canDrag: true,
     canDrop: null,
     canNodeHaveChildren: () => true,
@@ -297,7 +297,7 @@ export class ReactSortableTree<T> extends Component<
     this.clearMonitorSubscription();
   }
 
-  getRows(treeData: TreeItem[]) {
+  getRows(treeData: TreeItem<T>[]) {
     return memoizedGetFlatDataFromTree({
       ignoreCollapsed: true,
       getNodeKey: this.props.getNodeKey,
@@ -343,14 +343,26 @@ export class ReactSortableTree<T> extends Component<
     });
   }
 
-  moveNode({ node, path: prevPath, treeIndex: prevTreeIndex, depth, minimumTreeIndex }) {
+  moveNode({
+    node,
+    path: prevPath,
+    treeIndex: prevTreeIndex,
+    depth,
+    minimumTreeIndex,
+  }: {
+    node: TreeItem<T>;
+    path: NumberOrStringArray;
+    treeIndex: number;
+    depth: number;
+    minimumTreeIndex: number;
+  }) {
     const {
       treeData,
       treeIndex,
       path,
       parentNode: nextParentNode,
     } = insertNode({
-      treeData: [this.state.draggingTreeData],
+      treeData: this.state.draggingTreeData,
       newNode: node,
       depth,
       minimumTreeIndex,
@@ -380,7 +392,7 @@ export class ReactSortableTree<T> extends Component<
     seekIndex: boolean,
     expand: boolean,
     singleSearch: boolean
-  ) {
+  ): { searchMatches: NodeData<T>[] } {
     const {
       onChange,
       getNodeKey,
@@ -430,7 +442,7 @@ export class ReactSortableTree<T> extends Component<
       searchFinishCallback(searchMatches);
     }
 
-    let searchFocusTreeIndex = null;
+    let searchFocusTreeIndex: number | null = null;
     if (seekIndex && searchFocusOffset !== null && searchFocusOffset < searchMatches.length) {
       searchFocusTreeIndex = searchMatches[searchFocusOffset].treeIndex;
     }
@@ -463,7 +475,15 @@ export class ReactSortableTree<T> extends Component<
     });
   }
 
-  dragHover({ node: draggedNode, depth: draggedDepth, minimumTreeIndex: draggedMinimumTreeIndex }) {
+  dragHover({
+    node: draggedNode,
+    depth: draggedDepth,
+    minimumTreeIndex: draggedMinimumTreeIndex,
+  }: {
+    node: ITreeNode<T>;
+    depth: number;
+    minimumTreeIndex: number;
+  }) {
     // Ignore this hover if it is at the same position as the last hover
     if (
       this.state.draggedDepth === draggedDepth &&
@@ -475,7 +495,7 @@ export class ReactSortableTree<T> extends Component<
     this.setState(({ draggingTreeData, instanceProps }) => {
       // Fall back to the tree data if something is being dragged in from
       //  an external element
-      const newDraggingTreeData = [draggingTreeData] || instanceProps.treeData;
+      const newDraggingTreeData = draggingTreeData || instanceProps.treeData;
 
       const addedResult = memoizedInsertNode({
         treeData: newDraggingTreeData,
@@ -535,7 +555,7 @@ export class ReactSortableTree<T> extends Component<
       }
 
       let treeData = this.state.draggingTreeData
-        ? [this.state.draggingTreeData]
+        ? this.state.draggingTreeData
         : instanceProps.treeData;
 
       // If copying is enabled, a drop outside leaves behind a copy in the
@@ -569,7 +589,7 @@ export class ReactSortableTree<T> extends Component<
   }
 
   // eslint-disable-next-line react/no-unused-class-component-methods
-  canNodeHaveChildren(node) {
+  canNodeHaveChildren(node: TreeItem<T>) {
     const { canNodeHaveChildren } = this.props;
     if (canNodeHaveChildren) {
       return canNodeHaveChildren(node);
@@ -630,7 +650,18 @@ export class ReactSortableTree<T> extends Component<
 
   renderRow(
     row: FlatDataItem<T> & TreeIndex,
-    { listIndex, style, getPrevRow, matchKeys, swapFrom, swapDepth, swapLength }
+    {
+      listIndex,
+      style,
+      getPrevRow,
+      matchKeys,
+      swapFrom,
+      swapDepth,
+      swapLength,
+    }: Pick<
+      NodeRendererProps<T>,
+      'listIndex' | 'style' | 'swapFrom' | 'swapDepth' | 'swapLength'
+    > & { getPrevRow: () => IWalkCallbackParams<T> | null; matchKeys: Record<string, number> }
   ) {
     const { node, parentNode, path, lowerSiblingCounts, treeIndex } = row;
 
@@ -710,11 +741,11 @@ export class ReactSortableTree<T> extends Component<
     } = this.state;
 
     const treeData = this.state.draggingTreeData
-      ? [this.state.draggingTreeData]
+      ? this.state.draggingTreeData
       : instanceProps.treeData;
     const rowDirectionClass = rowDirection === 'rtl' ? 'rst__rtl' : null;
 
-    let rows;
+    let rows: IWalkCallbackParams<T>[];
     let swapFrom: number;
     let swapLength: number;
     if (draggedNode && draggedMinimumTreeIndex !== null) {
@@ -746,7 +777,7 @@ export class ReactSortableTree<T> extends Component<
       searchFocusTreeIndex !== null ? { scrollToIndex: searchFocusTreeIndex } : {};
 
     let containerStyle = style;
-    let list;
+    let list: JSX.Element | JSX.Element[];
     if (rows.length < 1) {
       const Placeholder = this.treePlaceholderRenderer;
       const PlaceholderContent = placeholderRenderer;

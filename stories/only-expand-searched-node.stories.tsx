@@ -1,16 +1,25 @@
+import type { Meta, StoryObj } from '@storybook/react';
 import React, { Component } from 'react';
+import { TreeItem } from '../src/models';
 import SortableTree from '../src';
 // In your own app, you would need to use import styles once in the app
 // import 'react-sortable-tree/styles.css';
 
-export default class App extends Component {
+interface IStoryComponentState {
+  searchString: string;
+  searchFocusIndex: number;
+  searchFoundCount: number;
+  treeData: TreeItem[];
+}
+
+class App extends Component<unknown, IStoryComponentState> {
   constructor(props) {
     super(props);
 
     const title = 'Hay';
 
     // For generating a haystack (you probably won't need to do this)
-    const getStack = (left, hasNeedle = false) => {
+    const getStack = (left: number, hasNeedle = false) => {
       if (left === 0) {
         return hasNeedle ? { title: 'Needle' } : { title };
       }
@@ -20,12 +29,12 @@ export default class App extends Component {
         children: [
           {
             title,
-            children: [getStack(left - 1, hasNeedle && left % 2), { title }],
+            children: [getStack(left - 1, hasNeedle && left % 2 === 0), { title }],
           },
           { title },
           {
             title,
-            children: [{ title }, getStack(left - 1, hasNeedle && (left + 1) % 2)],
+            children: [{ title }, getStack(left - 1, hasNeedle && (left + 1) % 2 === 0)],
           },
         ],
       };
@@ -127,9 +136,26 @@ export default class App extends Component {
                 searchFocusIndex: matches.length > 0 ? searchFocusIndex % matches.length : 0,
               })
             }
+            //
+            // This prop only expands the nodes that are seached.
+            onlyExpandSearchedNodes
           />
         </div>
       </div>
     );
   }
 }
+
+const meta: Meta<typeof App> = {
+  title: 'Advanced',
+  component: App,
+};
+
+type Story = StoryObj<typeof App>;
+
+export const OnlyExpandSearchedNodesExample: Story = {
+  name: 'onlyExpandSearchedNodes',
+  render: () => <App />,
+};
+
+export default meta;

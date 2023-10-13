@@ -20,4 +20,5 @@ module.exports = {
   testEnvironmentOptions: {
     enzymeAdapter: 'react16',
   },
+  testPathIgnorePatterns: ['storyshots.test.ts']
 };

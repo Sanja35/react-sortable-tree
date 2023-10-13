@@ -5,7 +5,7 @@ module.exports = {
     es2021: true,
     jest: true,
   },
-  extends: ['airbnb', 'airbnb-typescript', 'prettier'],
+  extends: ['airbnb', 'airbnb-typescript', 'prettier', 'plugin:storybook/recommended'],
   overrides: [],
   parserOptions: {
     sourceType: 'module',
@@ -26,7 +26,6 @@ module.exports = {
     'react/destructuring-assignment': 0,
     'react/jsx-filename-extension': 0,
     'react/prefer-stateless-function': 0,
-    'react/prop-types': 0,
     'react/sort-comp': 0,
     'react/jsx-props-no-spreading': 0,
   },

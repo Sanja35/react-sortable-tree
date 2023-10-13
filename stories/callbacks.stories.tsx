@@ -1,9 +1,18 @@
+import type { Meta, StoryObj } from '@storybook/react';
 import React, { Component } from 'react';
+import { TreeItem, NumberOrStringArray } from '../src/models';
 import SortableTree from '../src';
 // In your own app, you would need to use import styles once in the app
 // import 'react-sortable-tree/styles.css';
 
-export default class App extends Component {
+interface IStoryComponentState {
+  treeData: TreeItem[];
+  lastMovePrevPath: NumberOrStringArray;
+  lastMoveNextPath: NumberOrStringArray;
+  lastMoveNode: TreeItem;
+}
+
+class App extends Component<unknown, IStoryComponentState> {
   constructor(props) {
     super(props);
 
@@ -56,3 +65,17 @@ export default class App extends Component {
     );
   }
 }
+
+const meta: Meta<typeof App> = {
+  title: 'Basics',
+  component: App,
+};
+
+type Story = StoryObj<typeof App>;
+
+export const CallbacksExample: Story = {
+  name: 'Callbacks',
+  render: () => <App />,
+};
+
+export default meta;
