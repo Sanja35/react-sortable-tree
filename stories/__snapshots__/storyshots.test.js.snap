@@ -2740,6 +2740,7 @@ exports[`Storyshots Basics Add and remove nodes programmatically 1`] = `
                           >
                             <button
                               onClick={[Function]}
+                              type="button"
                             >
                               Add Child
                             </button>
@@ -2749,6 +2750,7 @@ exports[`Storyshots Basics Add and remove nodes programmatically 1`] = `
                           >
                             <button
                               onClick={[Function]}
+                              type="button"
                             >
                               Remove
                             </button>
@@ -2829,6 +2831,7 @@ exports[`Storyshots Basics Add and remove nodes programmatically 1`] = `
                           >
                             <button
                               onClick={[Function]}
+                              type="button"
                             >
                               Add Child
                             </button>
@@ -2838,6 +2841,7 @@ exports[`Storyshots Basics Add and remove nodes programmatically 1`] = `
                           >
                             <button
                               onClick={[Function]}
+                              type="button"
                             >
                               Remove
                             </button>
@@ -2856,6 +2860,7 @@ exports[`Storyshots Basics Add and remove nodes programmatically 1`] = `
   </div>
   <button
     onClick={[Function]}
+    type="button"
   >
     Add more
   </button>

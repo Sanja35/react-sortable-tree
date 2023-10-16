@@ -1,17 +1,17 @@
+// eslint-disable-next-line import/no-import-module-exports
 import React from 'react';
 
 // eslint-disable-next-line global-require
 const reactVirtualized = { ...require('react-virtualized') };
 
-/* eslint-disable react/prop-types */
-const MockAutoSizer = props =>
-  <div>
+function MockAutoSizer(props) {
+  return <div>
     {props.children({
       height: 99999,
       width: 200,
     })}
-  </div>;
-/* eslint-enable react/prop-types */
+  </div>
+}
 
 reactVirtualized.AutoSizer = MockAutoSizer;
 
