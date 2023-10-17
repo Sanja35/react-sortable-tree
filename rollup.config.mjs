@@ -39,7 +39,7 @@ export default {
       extract: path.resolve('dist/style.css'),
       minimize: true,
     }),
-    typescript({ exclude: '**/*.test.(ts|tsx)'}),
+    typescript({ exclude: '**/*.(test|stories).(ts|tsx)'}),
     commonjs({
       include: 'node_modules/**',
     }),

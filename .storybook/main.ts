@@ -3,8 +3,8 @@ import { hiddenProps } from './hidden-props';
 
 const config: StorybookConfig = {
   stories: [
-    '../stories/ts/**/*.mdx',
-    '../stories/ts/**/*.stories.(js|jsx|mjs|ts|tsx)',
+    '../stories/**/*.mdx',
+    '../stories/**/*.stories.(js|jsx|mjs|ts|tsx)',
   ],
   addons: [
     '@storybook/addon-links',

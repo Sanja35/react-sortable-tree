@@ -1,15 +1,13 @@
-// TODO: нужно переехать на https://github.com/TechStark/react-dnd-scrolling
 import withScrolling, {
   createHorizontalStrength,
-  createScrollingComponent,
   createVerticalStrength,
-} from 'frontend-collective-react-dnd-scrollzone';
+} from '@nosferatu500/react-dnd-scrollzone';
 import isEqual from 'lodash.isequal';
 import React, { Component } from 'react';
 import { DndComponentClass, DndContext, DndProvider } from 'react-dnd';
 import { Unsubscribe } from 'dnd-core';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { AutoSizer, List } from 'react-virtualized';
+import { AutoSizer, List, ListProps } from 'react-virtualized';
 import 'react-virtualized/styles.css';
 import NodeRendererDefault from './node-renderer-default';
 import PlaceholderRendererDefault from './placeholder-renderer-default';
@@ -164,11 +162,11 @@ export class ReactSortableTree<T> extends Component<
 
   clearMonitorSubscription: Unsubscribe;
 
-  scrollZoneVirtualList: any;
+  scrollZoneVirtualList: React.FC<ListProps>;
 
-  vStrength: number;
+  vStrength: ReturnType<typeof createVerticalStrength>;
 
-  hStrength: number;
+  hStrength: ReturnType<typeof createHorizontalStrength>;
 
   constructor(props: ReactSortableTreeBaseProps<T> & ReactSortableTreeDefaultProps) {
     super(props);
@@ -189,7 +187,7 @@ export class ReactSortableTree<T> extends Component<
 
     // Prepare scroll-on-drag options for this list
     if (isVirtualized) {
-      this.scrollZoneVirtualList = (createScrollingComponent || withScrolling)(List);
+      this.scrollZoneVirtualList = withScrolling(List);
       this.vStrength = createVerticalStrength(slideRegionSize);
       this.hStrength = createHorizontalStrength(slideRegionSize);
     }
@@ -799,7 +797,7 @@ export class ReactSortableTree<T> extends Component<
               dragDropManager={dragDropManager}
               verticalStrength={this.vStrength}
               horizontalStrength={this.hStrength}
-              speed={30}
+              strengthMultiplier={30}
               scrollToAlignment="start"
               className="rst__virtualScrollOverride"
               width={width}
