@@ -4,14 +4,6 @@
 
 # React Sortable Tree
 
-![NPM version](https://img.shields.io/npm/v/react-sortable-tree.svg?style=flat)
-![NPM license](https://img.shields.io/npm/l/react-sortable-tree.svg?style=flat)
-[![NPM total downloads](https://img.shields.io/npm/dt/react-sortable-tree.svg?style=flat)](https://npmcharts.com/compare/react-sortable-tree?minimal=true)
-[![NPM monthly downloads](https://img.shields.io/npm/dm/react-sortable-tree.svg?style=flat)](https://npmcharts.com/compare/react-sortable-tree?minimal=true)
-[![Build Status](https://travis-ci.org/frontend-collective/react-sortable-tree.svg?branch=master)](https://travis-ci.org/frontend-collective/react-sortable-tree)
-[![Coverage Status](https://coveralls.io/repos/github/frontend-collective/react-sortable-tree/badge.svg?branch=master)](https://coveralls.io/github/frontend-collective/react-sortable-tree?branch=master)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
-
 > A React component for Drag-and-drop sortable representation of hierarchical data. Checkout the [Storybook](https://frontend-collective.github.io/react-sortable-tree/) for a demonstration of some basic and advanced features.
 
 <div align="center">
@@ -174,7 +166,6 @@ Using the `theme` prop along with an imported theme module, you can easily overr
 | Chrome  | Yes    |
 | Firefox | Yes    |
 | Safari  | Yes    |
-| IE 11   | Yes    |
 
 ## Troubleshooting
 
@@ -203,24 +194,20 @@ Please read the [Code of Conduct](CODE_OF_CONDUCT.md). I actively welcome pull r
 After cloning the repository and running `yarn install` inside, you can use the following commands to develop and build the project.
 
 ```sh
-# Starts a webpack dev server that hosts a demo page with the component.
-# It uses react-hot-loader so changes are reflected on save.
-yarn start
-
 # Start the storybook, which has several different examples to play with.
 # Also hot-reloaded.
-yarn run storybook
+yarn storybook
 
 # Runs the library tests
 yarn test
 
 # Lints the code with eslint
-yarn run lint
+yarn lint
 
 # Lints and builds the code, placing the result in the dist directory.
 # This build is necessary to reflect changes if you're
 #  `npm link`-ed to this repository from another local project.
-yarn run build
+yarn build
 ```
 
 Pull requests are welcome!
