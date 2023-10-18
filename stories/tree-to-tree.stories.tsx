@@ -64,7 +64,7 @@ class App extends Component<unknown, IStoryComponentState> {
         <div style={{ clear: 'both' }} />
 
         <div>
-          <label htmlFor="should-copy" style={{ fontSize: '0.8rem' }}>
+          <label htmlFor="should-copy">
             Enable node copy via <b>shouldCopyOnOutsideDrop</b>:
             <input
               type="checkbox"

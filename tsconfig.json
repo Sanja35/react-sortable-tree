@@ -15,7 +15,8 @@
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
     "isolatedModules": true,
-    "outDir": "dist",
+    "declaration": true,
+    "outDir": "dist/lib",
     "baseUrl": "./",
     "resolveJsonModule": true
   },
