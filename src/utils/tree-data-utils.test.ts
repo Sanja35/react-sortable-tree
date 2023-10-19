@@ -1743,6 +1743,43 @@ describe('getTreeFromFlatData', () => {
       },
     ].forEach(checkFunction);
   });
+
+  it('should handle nested nodes with children', () => {
+    [
+      {
+        flatData: [
+          {
+            children: [
+              { key: 35, parentKey: 7 },
+              { key: 39, parentKey: 7 },
+            ],
+            key: 7,
+            parentKey: rootKey,
+          },
+          {
+            children: [{ key: 38, parentKey: 8 }],
+            key: 8,
+            parentKey: 7,
+          },
+        ],
+        expected: [
+          {
+            children: [
+              { key: 35, parentKey: 7 },
+              { key: 39, parentKey: 7 },
+              {
+                children: [{ key: 38, parentKey: 8 }],
+                key: 8,
+                parentKey: 7,
+              },
+            ],
+            key: 7,
+            parentKey: rootKey,
+          },
+        ],
+      },
+    ].forEach(checkFunction);
+  });
 });
 
 describe('map', () => {

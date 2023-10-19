@@ -132,7 +132,7 @@ function NodeRendererDefault({
                 <span
                   className={classnames(
                     'rst__rowTitle',
-                    node.subtitle && 'rst__rowTitleWithSubtitle'
+                    typeof nodeSubtitle !== 'undefined' && 'rst__rowTitleWithSubtitle'
                   )}
                 >
                   {typeof nodeTitle === 'function'
@@ -144,7 +144,7 @@ function NodeRendererDefault({
                     : nodeTitle}
                 </span>
 
-                {nodeSubtitle && (
+                {typeof nodeSubtitle !== 'undefined' && (
                   <span className="rst__rowSubtitle">
                     {typeof nodeSubtitle === 'function'
                       ? nodeSubtitle({

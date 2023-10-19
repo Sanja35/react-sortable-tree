@@ -4,7 +4,9 @@
   top: 0;
   right: 0;
   padding: 130px 50px 5px 50px;
-  font: 10px helvetica, sans-serif;
+  font:
+    10px helvetica,
+    sans-serif;
   display: inline-block;
   background: rgb(12, 35, 194);
   color: #fff;
