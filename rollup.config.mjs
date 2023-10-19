@@ -48,7 +48,7 @@ export default [
   },
   {
     input: 'dist/lib/index.d.ts',
-    output: [{ file: 'dist/lib/index.d.ts', format: 'es' }],
+    output: [{ file: pkg.types, format: 'es' }],
     plugins: [dts()],
     external: [/\.css$/],
   },

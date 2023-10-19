@@ -14,10 +14,6 @@ export interface GetTreeItemChildren<T = {}> {
   treeIndex: number;
 }
 
-// export type GetTreeItemChildrenFn<T = {}> = (
-//   data: GetTreeItemChildren<T>
-// ) => void;
-
 export type TreeItem<T = {}> = {
   title?: React.ReactNode;
   subtitle?: React.ReactNode;
@@ -66,7 +62,7 @@ export interface OnVisibilityToggleData<T = {}> extends FullTree<T>, TreeNode<T>
 
 export interface OnDragStateChangedData<T = {}> {
   isDragging: boolean;
-  draggedNode: TreeNode<T>; // TreeItem<T>;
+  draggedNode: TreeItem<T> | null;
 }
 
 interface PreviousAndNextLocation {

@@ -36,7 +36,6 @@ import {
   ThemeProps,
   TreeIndex,
   TreeItem,
-  TreeNode as ITreeNode,
   NodeData,
   FlatDataItem,
   ReactSortableTreeProps,
@@ -51,10 +50,19 @@ type ReactSortableTreeDefaultProps = Required<
 
 let treeIdCounter = 1;
 
+const overridableDefaults = {
+  nodeContentRenderer: NodeRendererDefault,
+  placeholderRenderer: PlaceholderRendererDefault,
+  rowHeight: 62,
+  scaffoldBlockPxWidth: 44,
+  slideRegionSize: 100,
+  treeNodeRenderer: TreeNode,
+};
+
 function mergeTheme<T>(
   props: ReactSortableTreeBaseProps<T> & ReactSortableTreeDefaultProps
-): ReactSortableTreeBaseProps<T> & ThemeProps<T> {
-  const merged: ReactSortableTreeBaseProps<T> = {
+): ReactSortableTreeBaseProps<T> & ThemeProps<T> & typeof overridableDefaults {
+  const merged = {
     ...props,
     style: { ...props.theme.style, ...props.style },
     innerStyle: { ...props.theme.innerStyle, ...props.innerStyle },
@@ -64,15 +72,7 @@ function mergeTheme<T>(
     },
   };
 
-  const overridableDefaults = {
-    nodeContentRenderer: NodeRendererDefault,
-    placeholderRenderer: PlaceholderRendererDefault,
-    rowHeight: 62,
-    scaffoldBlockPxWidth: 44,
-    slideRegionSize: 100,
-    treeNodeRenderer: TreeNode,
-  };
-  Object.keys(overridableDefaults).forEach((propKey) => {
+  (Object.keys(overridableDefaults) as (keyof typeof overridableDefaults)[]).forEach((propKey) => {
     // If prop has been specified, do not change it
     // If prop is specified in theme, use the theme setting
     // If all else fails, fall back to the default
@@ -84,12 +84,12 @@ function mergeTheme<T>(
     }
   });
 
-  return merged;
+  return merged as ReactSortableTreeBaseProps<T> & ThemeProps<T> & typeof overridableDefaults;
 }
 
 interface ReactSortableTreeState<T = {}> {
   draggingTreeData: TreeItem<T>[] | null;
-  draggedNode: ITreeNode<T> | null;
+  draggedNode: TreeItem<T> | null;
   draggedMinimumTreeIndex: number | null;
   draggedDepth: number | null;
   searchMatches: Array<NodeData<T>>;
@@ -101,7 +101,7 @@ interface ReactSortableTreeState<T = {}> {
     treeData: TreeItem<T>[];
     ignoreOneTreeUpdate: boolean;
     searchQuery: string | any | undefined;
-    searchFocusOffset: number | undefined;
+    searchFocusOffset: number | null | undefined;
   };
 }
 
@@ -478,7 +478,7 @@ export class ReactSortableTree<T> extends Component<
     depth: draggedDepth,
     minimumTreeIndex: draggedMinimumTreeIndex,
   }: {
-    node: ITreeNode<T>;
+    node: TreeItem<T>;
     depth: number;
     minimumTreeIndex: number;
   }) {
@@ -738,9 +738,7 @@ export class ReactSortableTree<T> extends Component<
       instanceProps,
     } = this.state;
 
-    const treeData = this.state.draggingTreeData
-      ? this.state.draggingTreeData
-      : instanceProps.treeData;
+    const treeData = this.state.draggingTreeData || instanceProps.treeData;
     const rowDirectionClass = rowDirection === 'rtl' ? 'rst__rtl' : null;
 
     let rows: IWalkCallbackParams<T>[];
