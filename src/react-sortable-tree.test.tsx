@@ -1,8 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import React, { Component } from 'react';
-import renderer from 'react-test-renderer';
 import { mount } from 'enzyme';
-import { List } from 'react-virtualized';
+import { Virtuoso, VirtuosoMockContext } from 'react-virtuoso';
 import { DndProvider, DndContext, DndComponentClass } from 'react-dnd';
 import { TestBackend } from 'react-dnd-test-backend';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -17,28 +16,40 @@ import { ReactSortableTreeProps, NodeRenderer } from './models';
 
 describe('<SortableTree />', () => {
   it('should render tree correctly', () => {
-    const tree = renderer
-      .create(<SortableTree treeData={[{}]} onChange={() => {}} />, {
-        createNodeMock: () => ({}),
-      })
-      .toJSON();
+    const tree = mount(
+      <VirtuosoMockContext.Provider value={{ viewportHeight: 300, itemHeight: 62 }}>
+        <SortableTree treeData={[{}]} onChange={() => {}} />
+      </VirtuosoMockContext.Provider>
+    );
 
-    expect(tree).toMatchSnapshot();
+    expect(tree.find('.rst__node').first()).toMatchSnapshot();
   });
 
   it('should render nodes for flat data', () => {
     let wrapper;
 
     // No nodes
-    wrapper = mount(<SortableTree treeData={[]} onChange={() => {}} />);
+    wrapper = mount(
+      <VirtuosoMockContext.Provider value={{ viewportHeight: 300, itemHeight: 62 }}>
+        <SortableTree treeData={[]} onChange={() => {}} />
+      </VirtuosoMockContext.Provider>
+    );
     expect(wrapper.find(TreeNode).length).toEqual(0);
 
     // Single node
-    wrapper = mount(<SortableTree treeData={[{}]} onChange={() => {}} />);
+    wrapper = mount(
+      <VirtuosoMockContext.Provider value={{ viewportHeight: 300, itemHeight: 62 }}>
+        <SortableTree treeData={[{}]} onChange={() => {}} />
+      </VirtuosoMockContext.Provider>
+    );
     expect(wrapper.find(TreeNode).length).toEqual(1);
 
     // Two nodes
-    wrapper = mount(<SortableTree treeData={[{}, {}]} onChange={() => {}} />);
+    wrapper = mount(
+      <VirtuosoMockContext.Provider value={{ viewportHeight: 300, itemHeight: 62 }}>
+        <SortableTree treeData={[{}, {}]} onChange={() => {}} />
+      </VirtuosoMockContext.Provider>
+    );
     expect(wrapper.find(TreeNode).length).toEqual(2);
   });
 
@@ -47,28 +58,34 @@ describe('<SortableTree />', () => {
 
     // Single Nested
     wrapper = mount(
-      <SortableTree treeData={[{ expanded: true, children: [{}] }]} onChange={() => {}} />
+      <VirtuosoMockContext.Provider value={{ viewportHeight: 500, itemHeight: 62 }}>
+        <SortableTree treeData={[{ expanded: true, children: [{}] }]} onChange={() => {}} />
+      </VirtuosoMockContext.Provider>
     );
     expect(wrapper.find(TreeNode).length).toEqual(2);
 
     // Double Nested
     wrapper = mount(
-      <SortableTree
-        treeData={[{ expanded: true, children: [{ expanded: true, children: [{}] }] }]}
-        onChange={() => {}}
-      />
+      <VirtuosoMockContext.Provider value={{ viewportHeight: 500, itemHeight: 62 }}>
+        <SortableTree
+          treeData={[{ expanded: true, children: [{ expanded: true, children: [{}] }] }]}
+          onChange={() => {}}
+        />
+      </VirtuosoMockContext.Provider>
     );
     expect(wrapper.find(TreeNode).length).toEqual(3);
 
     // 2x Double Nested Siblings
     wrapper = mount(
-      <SortableTree
-        treeData={[
-          { expanded: true, children: [{ expanded: true, children: [{}] }] },
-          { expanded: true, children: [{ expanded: true, children: [{}] }] },
-        ]}
-        onChange={() => {}}
-      />
+      <VirtuosoMockContext.Provider value={{ viewportHeight: 500, itemHeight: 62 }}>
+        <SortableTree
+          treeData={[
+            { expanded: true, children: [{ expanded: true, children: [{}] }] },
+            { expanded: true, children: [{ expanded: true, children: [{}] }] },
+          ]}
+          onChange={() => {}}
+        />
+      </VirtuosoMockContext.Provider>
     );
     expect(wrapper.find(TreeNode).length).toEqual(6);
   });
@@ -78,28 +95,34 @@ describe('<SortableTree />', () => {
 
     // Single Nested
     wrapper = mount(
-      <SortableTree treeData={[{ expanded: false, children: [{}] }]} onChange={() => {}} />
+      <VirtuosoMockContext.Provider value={{ viewportHeight: 500, itemHeight: 62 }}>
+        <SortableTree treeData={[{ expanded: false, children: [{}] }]} onChange={() => {}} />
+      </VirtuosoMockContext.Provider>
     );
     expect(wrapper.find(TreeNode).length).toEqual(1);
 
     // Double Nested
     wrapper = mount(
-      <SortableTree
-        treeData={[{ expanded: false, children: [{ expanded: false, children: [{}] }] }]}
-        onChange={() => {}}
-      />
+      <VirtuosoMockContext.Provider value={{ viewportHeight: 500, itemHeight: 62 }}>
+        <SortableTree
+          treeData={[{ expanded: false, children: [{ expanded: false, children: [{}] }] }]}
+          onChange={() => {}}
+        />
+      </VirtuosoMockContext.Provider>
     );
     expect(wrapper.find(TreeNode).length).toEqual(1);
 
     // 2x Double Nested Siblings, top level of first expanded
     wrapper = mount(
-      <SortableTree
-        treeData={[
-          { expanded: true, children: [{ expanded: false, children: [{}] }] },
-          { expanded: false, children: [{ expanded: false, children: [{}] }] },
-        ]}
-        onChange={() => {}}
-      />
+      <VirtuosoMockContext.Provider value={{ viewportHeight: 500, itemHeight: 62 }}>
+        <SortableTree
+          treeData={[
+            { expanded: true, children: [{ expanded: false, children: [{}] }] },
+            { expanded: false, children: [{ expanded: false, children: [{}] }] },
+          ]}
+          onChange={() => {}}
+        />
+      </VirtuosoMockContext.Provider>
     );
     expect(wrapper.find(TreeNode).length).toEqual(3);
   });
@@ -109,7 +132,11 @@ describe('<SortableTree />', () => {
       <SortableTree
         treeData={[{ title: 'a', children: [{ title: 'b' }] }]}
         onChange={(treeData) => wrapper.setProps({ treeData })}
-      />
+      />,
+      {
+        wrappingComponent: VirtuosoMockContext.Provider,
+        wrappingComponentProps: { value: { viewportHeight: 500, itemHeight: 62 } },
+      }
     );
 
     // Check nodes in collapsed state
@@ -126,12 +153,14 @@ describe('<SortableTree />', () => {
 
   it('should change outer wrapper style via `style` and `className` props', () => {
     const wrapper = mount(
-      <SortableTree
-        treeData={[{ title: 'a' }]}
-        onChange={() => {}}
-        style={{ borderWidth: 42 }}
-        className="extra-classy"
-      />
+      <VirtuosoMockContext.Provider value={{ viewportHeight: 500, itemHeight: 62 }}>
+        <SortableTree
+          treeData={[{ title: 'a' }]}
+          onChange={() => {}}
+          style={{ borderWidth: 42 }}
+          className="extra-classy"
+        />
+      </VirtuosoMockContext.Provider>
     );
 
     expect(wrapper.find('.rst__tree')).toHaveStyle('borderWidth', 42);
@@ -140,11 +169,13 @@ describe('<SortableTree />', () => {
 
   it('should change style of scroll container with `innerStyle` prop', () => {
     const wrapper = mount(
-      <SortableTree
-        treeData={[{ title: 'a' }]}
-        onChange={() => {}}
-        innerStyle={{ borderWidth: 42 }}
-      />
+      <VirtuosoMockContext.Provider value={{ viewportHeight: 500, itemHeight: 62 }}>
+        <SortableTree
+          treeData={[{ title: 'a' }]}
+          onChange={() => {}}
+          innerStyle={{ borderWidth: 42 }}
+        />
+      </VirtuosoMockContext.Provider>
     );
 
     expect(wrapper.find('.rst__virtualScrollOverride').first()).toHaveStyle('borderWidth', 42);
@@ -156,7 +187,11 @@ describe('<SortableTree />', () => {
         treeData={[{ title: 'a' }, { title: 'b', extraHeight: 2 }]}
         onChange={() => {}}
         rowHeight={12}
-      />
+      />,
+      {
+        wrappingComponent: VirtuosoMockContext.Provider,
+        wrappingComponentProps: { value: { viewportHeight: 500, itemHeight: 62 } },
+      }
     );
 
     // Works with static value
@@ -164,6 +199,7 @@ describe('<SortableTree />', () => {
 
     // Works with function callback
     wrapper.setProps({ rowHeight: ({ node }) => 42 + (node.extraHeight || 0) });
+    wrapper.update();
     expect(wrapper.find(TreeNode).first()).toHaveStyle('height', 42);
     expect(wrapper.find(TreeNode).last()).toHaveStyle('height', 44);
   });
@@ -173,7 +209,7 @@ describe('<SortableTree />', () => {
       <SortableTree treeData={[{ title: 'a' }, { title: 'b' }]} onChange={() => {}} isVirtualized />
     );
 
-    expect(virtualized.find(List).length).toEqual(1);
+    expect(virtualized.find(Virtuoso).length).toEqual(1);
 
     const notVirtualized = mount(
       <SortableTree
@@ -183,12 +219,14 @@ describe('<SortableTree />', () => {
       />
     );
 
-    expect(notVirtualized.find(List).length).toEqual(0);
+    expect(notVirtualized.find(Virtuoso).length).toEqual(0);
   });
 
   it('should change scaffold width according to scaffoldBlockPxWidth prop', () => {
     const wrapper = mount(
-      <SortableTree treeData={[{ title: 'a' }]} onChange={() => {}} scaffoldBlockPxWidth={12} />
+      <VirtuosoMockContext.Provider value={{ viewportHeight: 500, itemHeight: 62 }}>
+        <SortableTree treeData={[{ title: 'a' }]} onChange={() => {}} scaffoldBlockPxWidth={12} />
+      </VirtuosoMockContext.Provider>
     );
 
     expect(wrapper.find('.rst__lineBlock')).toHaveStyle('width', 12);
@@ -197,11 +235,13 @@ describe('<SortableTree />', () => {
   it('should pass props to the node renderer from `generateNodeProps`', () => {
     const title = 42;
     const wrapper = mount(
-      <SortableTree
-        treeData={[{ title }]}
-        onChange={() => {}}
-        generateNodeProps={({ node }) => ({ buttons: [node.title] })}
-      />
+      <VirtuosoMockContext.Provider value={{ viewportHeight: 500, itemHeight: 62 }}>
+        <SortableTree
+          treeData={[{ title }]}
+          onChange={() => {}}
+          generateNodeProps={({ node }) => ({ buttons: [node.title] })}
+        />
+      </VirtuosoMockContext.Provider>
     );
 
     expect(wrapper.find(DefaultNodeRenderer)).toHaveProp('buttons', [title]);
@@ -213,11 +253,15 @@ describe('<SortableTree />', () => {
     const wrapper = mount(
       <SortableTree
         treeData={[{ title: 'a', children: [{ title: 'b' }] }]}
-        onChange={(treeData) => wrapper.setProps({ treeData })}
+        onChange={(treeData) => wrapper.setProps({ treeData }).update()}
         onVisibilityToggle={({ expanded }) => {
           out = expanded ? 'expanded' : 'collapsed';
         }}
-      />
+      />,
+      {
+        wrappingComponent: VirtuosoMockContext.Provider,
+        wrappingComponentProps: { value: { viewportHeight: 500, itemHeight: 62 } },
+      }
     );
 
     wrapper.find('.rst__expandButton').first().simulate('click');
@@ -235,11 +279,13 @@ describe('<SortableTree />', () => {
     }
 
     const wrapper = mount(
-      <SortableTree
-        treeData={[{ title: 'a' }]}
-        onChange={() => {}}
-        nodeContentRenderer={FakeNode as NodeRenderer}
-      />
+      <VirtuosoMockContext.Provider value={{ viewportHeight: 500, itemHeight: 62 }}>
+        <SortableTree
+          treeData={[{ title: 'a' }]}
+          onChange={() => {}}
+          nodeContentRenderer={FakeNode as NodeRenderer}
+        />
+      </VirtuosoMockContext.Provider>
     );
 
     expect(wrapper.find(FakeNode).length).toEqual(1);
@@ -393,20 +439,22 @@ describe('<SortableTree />', () => {
     let manager = null;
 
     const wrapper = mount(
-      <DndProvider backend={TestBackend}>
-        <DndContext.Consumer>
-          {({ dragDropManager }) => {
-            manager = dragDropManager;
+      <VirtuosoMockContext.Provider value={{ viewportHeight: 500, itemHeight: 62 }}>
+        <DndProvider backend={TestBackend}>
+          <DndContext.Consumer>
+            {({ dragDropManager }) => {
+              manager = dragDropManager;
 
-            return null;
-          }}
-        </DndContext.Consumer>
-        <SortableTreeWithoutDndContext
-          treeData={treeData}
-          onDragStateChanged={onDragStateChanged}
-          onChange={() => {}}
-        />
-      </DndProvider>
+              return null;
+            }}
+          </DndContext.Consumer>
+          <SortableTreeWithoutDndContext
+            treeData={treeData}
+            onDragStateChanged={onDragStateChanged}
+            onChange={() => {}}
+          />
+        </DndProvider>
+      </VirtuosoMockContext.Provider>
     );
 
     // Obtain a reference to the backend

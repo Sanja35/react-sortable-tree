@@ -7,8 +7,9 @@ import {
   DropTargetSpec,
   DropTargetConnector,
 } from 'react-dnd';
+import React from 'react';
 import { getDepth } from './tree-data-utils';
-import { FlatDataItem, NumberOrStringArray, NodeData } from '../models';
+import { FlatDataItem, NumberOrStringArray, DragNodeData } from '../models';
 import type { ReactSortableTree } from '../react-sortable-tree';
 import { memoizedInsertNode } from './memoized-tree-data-utils';
 
@@ -68,8 +69,8 @@ export default class DndManager<T> {
       scaffoldBlockPxWidth: number;
       rowDirection: 'ltr' | 'rtl';
     },
-    monitor: DropTargetMonitor,
-    component?: HTMLElement | null // ReactInstance | null | undefined
+    monitor: DropTargetMonitor<DragNodeData, DragNodeData>,
+    component?: { treeNodeRef: React.RefObject<HTMLDivElement> }
   ) {
     let dropTargetDepth = 0;
 
@@ -94,7 +95,7 @@ export default class DndManager<T> {
       dragSourceInitialDepth = 0;
 
       if (component) {
-        const relativePosition = component.getBoundingClientRect(); // TODO: fix
+        const relativePosition = component.treeNodeRef.current.getBoundingClientRect();
         const leftShift = monitor.getSourceClientOffset().x - relativePosition.left;
         blocksOffset = Math.round(leftShift / dropTargetProps.scaffoldBlockPxWidth);
       } else {
@@ -134,7 +135,7 @@ export default class DndManager<T> {
       rowDirection: 'ltr' | 'rtl';
       listIndex: number;
     },
-    monitor: DropTargetMonitor
+    monitor: DropTargetMonitor<DragNodeData, DragNodeData>
   ) {
     if (!monitor.isOver()) {
       return false;
@@ -181,7 +182,7 @@ export default class DndManager<T> {
   }
 
   wrapSource(el) {
-    const nodeDragSource: DragSourceSpec<any, any> = {
+    const nodeDragSource: DragSourceSpec<any, DragNodeData, DragNodeData> = {
       beginDrag: (props) => {
         this.startDrag(props);
 
@@ -194,11 +195,11 @@ export default class DndManager<T> {
         };
       },
 
-      endDrag: (props: any, monitor: DragSourceMonitor) => {
+      endDrag: (props: any, monitor) => {
         this.endDrag(monitor.getDropResult());
       },
 
-      isDragging: (props, monitor: DragSourceMonitor) => {
+      isDragging: (props, monitor) => {
         const dropTargetNode = monitor.getItem().node;
         const draggedNode = props.node;
 
@@ -206,7 +207,10 @@ export default class DndManager<T> {
       },
     };
 
-    function nodeDragSourcePropInjection(connect, monitor: DragSourceMonitor) {
+    function nodeDragSourcePropInjection(
+      connect,
+      monitor: DragSourceMonitor<DragNodeData, DragNodeData>
+    ) {
       return {
         connectDragSource: connect.dragSource(),
         connectDragPreview: connect.dragPreview(),
@@ -268,7 +272,10 @@ export default class DndManager<T> {
       canDrop: this.canDrop.bind(this),
     };
 
-    function nodeDropTargetPropInjection(connect, monitor) {
+    function nodeDropTargetPropInjection(
+      connect: DropTargetConnector,
+      monitor: DropTargetMonitor<DragNodeData, DragNodeData>
+    ) {
       const dragged = monitor.getItem();
       return {
         connectDropTarget: connect.dropTarget(),
@@ -282,9 +289,9 @@ export default class DndManager<T> {
   }
 
   wrapPlaceholder(el) {
-    const placeholderDropTarget: DropTargetSpec<unknown> = {
+    const placeholderDropTarget: DropTargetSpec<unknown, DragNodeData, DragNodeData> = {
       drop: (dropTargetProps, monitor) => {
-        const { node, path, treeIndex }: NodeData = monitor.getItem();
+        const { node, path, treeIndex } = monitor.getItem();
         const result = {
           node,
           path,
@@ -300,7 +307,10 @@ export default class DndManager<T> {
       },
     };
 
-    function placeholderPropInjection(connect: DropTargetConnector, monitor: DropTargetMonitor) {
+    function placeholderPropInjection(
+      connect: DropTargetConnector,
+      monitor: DropTargetMonitor<DragNodeData, DragNodeData>
+    ) {
       const dragged = monitor.getItem();
       return {
         connectDropTarget: connect.dropTarget(),

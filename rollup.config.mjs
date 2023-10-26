@@ -30,7 +30,7 @@ export default [
       'react-dnd',
       'react-dnd-html5-backend',
       '@nosferatu500/react-dnd-scrollzone',
-      'react-virtualized',
+      'react-virtuoso',
       'lodash.isequal',
     ],
     plugins: [

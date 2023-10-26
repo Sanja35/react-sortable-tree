@@ -5,10 +5,9 @@ import withScrolling, {
 import isEqual from 'lodash.isequal';
 import React, { Component } from 'react';
 import { DndComponentClass, DndContext, DndProvider } from 'react-dnd';
-import { Unsubscribe } from 'dnd-core';
+import { DragDropManager, Unsubscribe } from 'dnd-core';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { AutoSizer, List, ListProps } from 'react-virtualized';
-import 'react-virtualized/styles.css';
+import { Virtuoso, VirtuosoHandle, VirtuosoProps } from 'react-virtuoso';
 import NodeRendererDefault from './node-renderer-default';
 import PlaceholderRendererDefault from './placeholder-renderer-default';
 import './react-sortable-tree.css';
@@ -37,11 +36,13 @@ import {
   TreeIndex,
   TreeItem,
   NodeData,
+  DragNodeData,
   FlatDataItem,
   ReactSortableTreeProps,
   ReactSortableTreeBaseProps,
   NumberOrStringArray,
   NodeRendererProps,
+  IScrollzoneProps,
 } from './models';
 
 type ReactSortableTreeDefaultProps = Required<
@@ -59,17 +60,17 @@ const overridableDefaults = {
   treeNodeRenderer: TreeNode,
 };
 
+type TMergeTheme<T> = ReactSortableTreeBaseProps<T> &
+  ThemeProps<T> &
+  Required<Pick<ReactSortableTreeBaseProps<T> & ThemeProps<T>, keyof typeof overridableDefaults>>;
+
 function mergeTheme<T>(
   props: ReactSortableTreeBaseProps<T> & ReactSortableTreeDefaultProps
-): ReactSortableTreeBaseProps<T> & ThemeProps<T> & typeof overridableDefaults {
+): TMergeTheme<T> {
   const merged = {
     ...props,
     style: { ...props.theme.style, ...props.style },
     innerStyle: { ...props.theme.innerStyle, ...props.innerStyle },
-    reactVirtualizedListProps: {
-      ...props.theme.reactVirtualizedListProps,
-      ...props.reactVirtualizedListProps,
-    },
   };
 
   (Object.keys(overridableDefaults) as (keyof typeof overridableDefaults)[]).forEach((propKey) => {
@@ -84,7 +85,7 @@ function mergeTheme<T>(
     }
   });
 
-  return merged as ReactSortableTreeBaseProps<T> & ThemeProps<T> & typeof overridableDefaults;
+  return merged as TMergeTheme<T>;
 }
 
 interface ReactSortableTreeState<T = {}> {
@@ -128,7 +129,6 @@ export class ReactSortableTree<T> extends Component<
     onMoveNode: () => {},
     onVisibilityToggle: () => {},
     placeholderRenderer: null,
-    reactVirtualizedListProps: {},
     rowHeight: null,
     scaffoldBlockPxWidth: null,
     searchFinishCallback: null,
@@ -154,6 +154,8 @@ export class ReactSortableTree<T> extends Component<
   // eslint-disable-next-line react/no-unused-class-component-methods
   scrollTop: number;
 
+  listRef: React.RefObject<VirtuosoHandle>;
+
   treeNodeRenderer: DndComponentClass<any, any>;
 
   nodeContentRenderer: DndComponentClass<any, any>;
@@ -162,7 +164,7 @@ export class ReactSortableTree<T> extends Component<
 
   clearMonitorSubscription: Unsubscribe;
 
-  scrollZoneVirtualList: React.FC<ListProps>;
+  scrollZoneVirtualList: React.FC<VirtuosoProps<any, any> & IScrollzoneProps>;
 
   vStrength: ReturnType<typeof createVerticalStrength>;
 
@@ -171,8 +173,14 @@ export class ReactSortableTree<T> extends Component<
   constructor(props: ReactSortableTreeBaseProps<T> & ReactSortableTreeDefaultProps) {
     super(props);
 
-    const { dndType, nodeContentRenderer, treeNodeRenderer, isVirtualized, slideRegionSize } =
-      mergeTheme(props);
+    const {
+      dndType,
+      nodeContentRenderer,
+      treeNodeRenderer,
+      isVirtualized,
+      slideRegionSize,
+      virtuosoRef,
+    } = mergeTheme(props);
 
     this.dndManager = new DndManager(this);
 
@@ -187,7 +195,29 @@ export class ReactSortableTree<T> extends Component<
 
     // Prepare scroll-on-drag options for this list
     if (isVirtualized) {
-      this.scrollZoneVirtualList = withScrolling(List);
+      this.listRef = virtuosoRef || React.createRef();
+      this.scrollZoneVirtualList = withScrolling(
+        // eslint-disable-next-line react/no-unstable-nested-components
+        React.forwardRef<
+          HTMLElement | Window,
+          // eslint-disable-next-line react/no-unused-prop-types
+          VirtuosoProps<any, any> & { dragDropManager: DragDropManager }
+        >((listProps, ref) => {
+          const { dragDropManager, ...otherListProps } = listProps;
+
+          return (
+            <Virtuoso
+              {...otherListProps}
+              // eslint-disable-next-line react/no-this-in-sfc
+              ref={this.listRef}
+              scrollerRef={(scrollerRef) => {
+                // eslint-disable-next-line no-param-reassign
+                (ref as React.MutableRefObject<HTMLElement | Window>).current = scrollerRef;
+              }}
+            />
+          );
+        })
+      );
       this.vStrength = createVerticalStrength(slideRegionSize);
       this.hStrength = createHorizontalStrength(slideRegionSize);
     }
@@ -525,7 +555,7 @@ export class ReactSortableTree<T> extends Component<
     });
   }
 
-  endDrag(dropResult?: NodeData<T> & { treeId: string }) {
+  endDrag(dropResult?: DragNodeData) {
     const { instanceProps } = this.state;
 
     const resetTree = () =>
@@ -663,8 +693,14 @@ export class ReactSortableTree<T> extends Component<
   ) {
     const { node, parentNode, path, lowerSiblingCounts, treeIndex } = row;
 
-    const { canDrag, generateNodeProps, scaffoldBlockPxWidth, searchFocusOffset, rowDirection } =
-      mergeTheme<T>(this.props);
+    const {
+      canDrag,
+      generateNodeProps,
+      scaffoldBlockPxWidth,
+      searchFocusOffset,
+      rowDirection,
+      rowHeight,
+    } = mergeTheme<T>(this.props);
     const TreeNodeRenderer = this.treeNodeRenderer;
     const NodeContentRenderer = this.nodeContentRenderer;
     const nodeKey = path[path.length - 1];
@@ -681,6 +717,15 @@ export class ReactSortableTree<T> extends Component<
     };
     const nodeProps = !generateNodeProps ? {} : generateNodeProps(callbackParams);
     const rowCanDrag = typeof canDrag !== 'function' ? canDrag : canDrag(callbackParams);
+    const height =
+      typeof rowHeight === 'function'
+        ? rowHeight({
+            index: listIndex,
+            treeIndex: listIndex,
+            node: row.node,
+            path: row.path,
+          })
+        : rowHeight;
 
     const sharedProps = {
       treeIndex,
@@ -693,7 +738,7 @@ export class ReactSortableTree<T> extends Component<
 
     return (
       <TreeNodeRenderer
-        style={style}
+        style={{ ...style, height }}
         key={nodeKey}
         listIndex={listIndex}
         getPrevRow={getPrevRow}
@@ -718,14 +763,13 @@ export class ReactSortableTree<T> extends Component<
 
   render() {
     const {
-      dragDropManager,
       style,
       className,
       innerStyle,
-      rowHeight,
+      // rowHeight,
       isVirtualized,
       placeholderRenderer,
-      reactVirtualizedListProps,
+      virtuosoProps,
       getNodeKey,
       rowDirection,
     } = mergeTheme(this.props);
@@ -737,6 +781,8 @@ export class ReactSortableTree<T> extends Component<
       draggedMinimumTreeIndex,
       instanceProps,
     } = this.state;
+
+    // console.log('render', rowHeight);
 
     const treeData = this.state.draggingTreeData || instanceProps.treeData;
     const rowDirectionClass = rowDirection === 'rtl' ? 'rst__rtl' : null;
@@ -769,8 +815,24 @@ export class ReactSortableTree<T> extends Component<
     });
 
     // Seek to the focused search result if there is one specified
-    const scrollToInfo =
-      searchFocusTreeIndex !== null ? { scrollToIndex: searchFocusTreeIndex } : {};
+    // const scrollToInfo =
+    //   searchFocusTreeIndex !== null ? { scrollToIndex: searchFocusTreeIndex } : {};
+    if (searchFocusTreeIndex !== null) {
+      this.listRef?.current?.scrollToIndex({ index: searchFocusTreeIndex, align: 'center' });
+    }
+
+    // const getRowHeight = (row: IWalkCallbackParams<T>, index: number) => {
+    //   if (typeof rowHeight !== 'function') {
+    //     return rowHeight;
+    //   }
+
+    //   return rowHeight({
+    //     index,
+    //     treeIndex: index,
+    //     node: row.node,
+    //     path: row.path,
+    //   });
+    // };
 
     let containerStyle = style;
     let list: JSX.Element | JSX.Element[];
@@ -786,70 +848,36 @@ export class ReactSortableTree<T> extends Component<
       containerStyle = { height: '100%', ...containerStyle };
 
       const ScrollZoneVirtualList = this.scrollZoneVirtualList;
-      // Render list with react-virtualized
+
+      // Render list with react-virtuoso
       list = (
-        <AutoSizer>
-          {({ height, width }) => (
-            <ScrollZoneVirtualList
-              {...scrollToInfo}
-              dragDropManager={dragDropManager}
-              verticalStrength={this.vStrength}
-              horizontalStrength={this.hStrength}
-              strengthMultiplier={30}
-              scrollToAlignment="start"
-              className="rst__virtualScrollOverride"
-              width={width}
-              onScroll={({ scrollTop }) => {
-                // eslint-disable-next-line react/no-unused-class-component-methods
-                this.scrollTop = scrollTop;
-              }}
-              height={height}
-              style={innerStyle}
-              rowCount={rows.length}
-              estimatedRowSize={typeof rowHeight !== 'function' ? rowHeight : undefined}
-              rowHeight={
-                typeof rowHeight !== 'function'
-                  ? rowHeight
-                  : ({ index }) =>
-                      rowHeight({
-                        index,
-                        treeIndex: index,
-                        node: rows[index].node,
-                        path: rows[index].path,
-                      })
-              }
-              rowRenderer={({ index, style: rowStyle }) =>
-                this.renderRow(rows[index], {
-                  listIndex: index,
-                  style: rowStyle,
-                  getPrevRow: () => rows[index - 1] || null,
-                  matchKeys,
-                  swapFrom,
-                  swapDepth: draggedDepth,
-                  swapLength,
-                })
-              }
-              {...reactVirtualizedListProps}
-            />
-          )}
-        </AutoSizer>
+        <ScrollZoneVirtualList
+          verticalStrength={this.vStrength}
+          horizontalStrength={this.hStrength}
+          strengthMultiplier={30}
+          className="rst__virtualScrollOverride"
+          style={innerStyle}
+          data={rows}
+          itemContent={(index) =>
+            this.renderRow(rows[index], {
+              listIndex: index,
+              // style: { height: getRowHeight(rows[index], index) },
+              getPrevRow: () => rows[index - 1] || null,
+              matchKeys,
+              swapFrom,
+              swapDepth: draggedDepth,
+              swapLength,
+            })
+          }
+          {...virtuosoProps}
+        />
       );
     } else {
-      // Render list without react-virtualized
+      // Render list without react-virtuoso
       list = rows.map((row, index) =>
         this.renderRow(row, {
           listIndex: index,
-          style: {
-            height:
-              typeof rowHeight !== 'function'
-                ? rowHeight
-                : rowHeight({
-                    index,
-                    treeIndex: index,
-                    node: row.node,
-                    path: row.path,
-                  }),
-          },
+          // style: { height: getRowHeight(row, index) },
           getPrevRow: () => rows[index - 1] || null,
           matchKeys,
           swapFrom,

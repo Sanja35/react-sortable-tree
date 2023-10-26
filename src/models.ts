@@ -1,10 +1,26 @@
 import * as React from 'react';
-import { ListProps, Index } from 'react-virtualized';
-import { ConnectDragSource, ConnectDragPreview, ConnectDropTarget } from 'react-dnd';
+import type { VirtuosoProps, VirtuosoHandle } from 'react-virtuoso';
+import {
+  createVerticalStrength,
+  createHorizontalStrength,
+} from '@nosferatu500/react-dnd-scrollzone';
+import type { ConnectDragSource, ConnectDragPreview, ConnectDropTarget } from 'react-dnd';
 import type { DragDropManager } from 'dnd-core';
 
 // export * from './utils/tree-data-utils';
 // export * from './utils/default-handlers';
+
+export interface IScrollzoneProps {
+  // dragDropManager: DragDropManager;
+  verticalStrength: ReturnType<typeof createVerticalStrength>;
+  horizontalStrength: ReturnType<typeof createHorizontalStrength>;
+  strengthMultiplier: number;
+}
+
+export type TVirtuosoConfigurableProps = Omit<
+  VirtuosoProps<any, any>,
+  'totalCount' | 'data' | 'context' | 'itemContent' | 'scrollerRef'
+>;
 
 export interface GetTreeItemChildren<T = {}> {
   done: (children: Array<TreeItem<T>>) => void;
@@ -39,6 +55,11 @@ export interface FullTree<T = {}> {
 }
 
 export interface NodeData<T = {}> extends TreeNode<T>, TreePath, TreeIndex {}
+
+export interface DragNodeData<T = {}> extends NodeData<T> {
+  parentNode?: TreeItem<T>;
+  treeId: string;
+}
 
 export interface FlatDataItem<T = {}> extends TreeNode<T>, TreePath {
   lowerSiblingCounts: number[];
@@ -170,17 +191,13 @@ interface ThemeTreeProps<T = {}> {
   style?: React.CSSProperties | undefined;
   // Style applied to the inner, scrollable container (for padding, etc.)
   innerStyle?: React.CSSProperties | undefined;
-  // Custom properties to hand to the react-virtualized list
-  // https://github.com/bvaughn/react-virtualized/blob/master/docs/List.md#prop-types
-  reactVirtualizedListProps?: Partial<ListProps> | undefined;
   // The width of the blocks containing the lines representing the structure of the tree.
   scaffoldBlockPxWidth?: number | undefined;
   // Size in px of the region near the edges that initiates scrolling on dragover
   slideRegionSize?: number | undefined;
-  // Used by react-virtualized
   // Either a fixed row height (number) or a function that returns the
   // height of a row given its index: `({ index: number }): number`
-  rowHeight?: ((info: NodeData<T> & Index) => number) | number | undefined;
+  rowHeight?: ((info: NodeData<T> & { index: number }) => number) | number | undefined;
   // Override the default component for rendering nodes (but keep the scaffolding generator)
   // This is an advanced option for complete customization of the appearance.
   // It is best to copy the component in `node-renderer-default.js` to use as a base, and customize as needed.
@@ -260,6 +277,12 @@ export interface ReactSortableTreeBaseProps<T = {}> extends ThemeTreeProps<T> {
   isVirtualized?: boolean | undefined;
 
   dragDropManager: DragDropManager;
+
+  // https://virtuoso.dev/virtuoso-api-reference/#virtuoso-properties
+  virtuosoProps?: TVirtuosoConfigurableProps;
+
+  // https://virtuoso.dev/virtuoso-api-reference/#methods
+  virtuosoRef?: React.RefObject<VirtuosoHandle>;
 
   // Свойство под вопросом
   loadCollapsedLazyChildren?: boolean;

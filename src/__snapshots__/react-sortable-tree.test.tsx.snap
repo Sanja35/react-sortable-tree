@@ -2,120 +2,115 @@
 
 exports[`<SortableTree /> should render tree correctly 1`] = `
 <div
-  className="rst__tree"
+  className="rst__node"
   style={
     Object {
-      "height": "100%",
+      "height": 62,
     }
   }
 >
-  <div>
-    <div
-      aria-label="grid"
-      aria-readonly={true}
-      className="ReactVirtualized__Grid ReactVirtualized__List rst__virtualScrollOverride"
-      onScroll={[Function]}
-      role="grid"
-      style={
-        Object {
-          "WebkitOverflowScrolling": "touch",
-          "boxSizing": "border-box",
-          "direction": "ltr",
-          "height": 99999,
-          "overflowX": "hidden",
-          "overflowY": "hidden",
-          "position": "relative",
-          "width": 200,
-          "willChange": "transform",
-        }
+  <div
+    className="rst__lineBlock rst__lineHalfHorizontalRight"
+    key="pre_1"
+    style={
+      Object {
+        "width": 44,
       }
-      tabIndex={0}
+    }
+  />
+  <div
+    className="rst__nodeContent"
+    style={
+      Object {
+        "left": 44,
+      }
+    }
+  >
+    <DragSource(NodeRendererDefault)
+      canDrag={true}
+      canDrop={false}
+      draggedNode={null}
+      isOver={false}
+      isSearchFocus={false}
+      isSearchMatch={false}
+      key=".0"
+      node={Object {}}
+      parentNode={null}
+      path={
+        Array [
+          0,
+        ]
+      }
+      rowDirection="ltr"
+      scaffoldBlockPxWidth={44}
+      toggleChildrenVisibility={[Function]}
+      treeId="rst__1"
+      treeIndex={0}
     >
-      <div
-        className="ReactVirtualized__Grid__innerScrollContainer"
-        role="rowgroup"
-        style={
-          Object {
-            "height": 62,
-            "maxHeight": 62,
-            "maxWidth": 200,
-            "overflow": "hidden",
-            "pointerEvents": "",
-            "position": "relative",
-            "width": "auto",
-          }
+      <NodeRendererDefault
+        canDrag={true}
+        canDrop={false}
+        connectDragPreview={[Function]}
+        connectDragSource={[Function]}
+        didDrop={false}
+        draggedNode={null}
+        isDragging={false}
+        isOver={false}
+        isSearchFocus={false}
+        isSearchMatch={false}
+        node={Object {}}
+        parentNode={null}
+        path={
+          Array [
+            0,
+          ]
         }
+        rowDirection="ltr"
+        scaffoldBlockPxWidth={44}
+        toggleChildrenVisibility={[Function]}
+        treeId="rst__1"
+        treeIndex={0}
       >
         <div
-          className="rst__node"
           style={
             Object {
-              "height": 62,
-              "left": 0,
-              "position": "absolute",
-              "top": 0,
-              "width": "100%",
+              "height": "100%",
             }
           }
         >
           <div
-            className="rst__lineBlock rst__lineHalfHorizontalRight"
-            style={
-              Object {
-                "width": 44,
-              }
-            }
-          />
-          <div
-            className="rst__nodeContent"
-            style={
-              Object {
-                "left": 44,
-              }
-            }
+            className="rst__rowWrapper"
           >
             <div
+              className="rst__row"
               style={
                 Object {
-                  "height": "100%",
+                  "opacity": 1,
                 }
               }
             >
               <div
-                className="rst__rowWrapper"
+                className="rst__moveHandle"
+              />
+              <div
+                className="rst__rowContents"
               >
                 <div
-                  className="rst__row"
-                  style={
-                    Object {
-                      "opacity": 1,
-                    }
-                  }
+                  className="rst__rowLabel"
                 >
-                  <div
-                    className="rst__moveHandle"
+                  <span
+                    className="rst__rowTitle"
                   />
-                  <div
-                    className="rst__rowContents"
-                  >
-                    <div
-                      className="rst__rowLabel"
-                    >
-                      <span
-                        className="rst__rowTitle"
-                      />
-                    </div>
-                    <div
-                      className="rst__rowToolbar"
-                    />
-                  </div>
                 </div>
+                <div
+                  className="rst__rowToolbar"
+                />
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </NodeRendererDefault>
+    </DragSource(NodeRendererDefault)>
   </div>
 </div>
 `;
