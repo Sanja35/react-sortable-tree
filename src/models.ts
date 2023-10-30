@@ -99,7 +99,7 @@ export interface OnDragPreviousAndNextLocation<T = {}> extends PreviousAndNextLo
 }
 
 export interface ShouldCopyData<T = {}> {
-  node: TreeItem<T>; // TreeNode<T>;
+  node: TreeItem<T>;
   prevPath: NumberOrStringArray;
   prevTreeIndex: number;
 }

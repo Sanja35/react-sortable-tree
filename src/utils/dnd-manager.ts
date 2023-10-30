@@ -6,6 +6,7 @@ import {
   DragSourceSpec,
   DropTargetSpec,
   DropTargetConnector,
+  DragSourceConnector,
 } from 'react-dnd';
 import React from 'react';
 import { getDepth } from './tree-data-utils';
@@ -195,7 +196,7 @@ export default class DndManager<T> {
         };
       },
 
-      endDrag: (props: any, monitor) => {
+      endDrag: (props, monitor) => {
         this.endDrag(monitor.getDropResult());
       },
 
@@ -208,7 +209,7 @@ export default class DndManager<T> {
     };
 
     function nodeDragSourcePropInjection(
-      connect,
+      connect: DragSourceConnector,
       monitor: DragSourceMonitor<DragNodeData, DragNodeData>
     ) {
       return {

@@ -151,9 +151,6 @@ export class ReactSortableTree<T> extends Component<
 
   dndManager: DndManager<T>;
 
-  // eslint-disable-next-line react/no-unused-class-component-methods
-  scrollTop: number;
-
   listRef: React.RefObject<VirtuosoHandle>;
 
   treeNodeRenderer: DndComponentClass<any, any>;

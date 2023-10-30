@@ -8,14 +8,6 @@
   box-sizing: border-box;
 }
 
-.ReactVirtualized__Grid__innerScrollContainer {
-  overflow: visible !important;
-}
-
-.rst__rtl .ReactVirtualized__Grid__innerScrollContainer {
+.rst__rtl .rst__virtualScrollOverride {
   direction: rtl;
-}
-
-.ReactVirtualized__Grid {
-  outline: none;
 }
