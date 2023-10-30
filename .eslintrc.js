@@ -30,10 +30,4 @@ module.exports = {
     'react/jsx-props-no-spreading': 0,
     'import/no-extraneous-dependencies': 0,
   },
-  // overrides: [
-  //   {
-  //     files: ['test-config/*', 'rollup.config.mjs'],
-  //     rules: { 'import/no-extraneous-dependencies': 0 },
-  //   },
-  // ],
 };

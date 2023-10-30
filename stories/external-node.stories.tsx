@@ -74,10 +74,7 @@ class App extends Component<unknown, IStoryComponentState> {
     super(props);
 
     this.state = {
-      treeData: [
-        { title: 'Mama Rabbit', children: [] },
-        { title: 'Papa Rabbit', children: [] },
-      ],
+      treeData: [{ title: 'Mama Rabbit' }, { title: 'Papa Rabbit' }],
     };
   }
 
@@ -87,20 +84,11 @@ class App extends Component<unknown, IStoryComponentState> {
         <div>
           <div style={{ height: 300 }}>
             <SortableTree
-              // isVirtualized={false}
               treeData={this.state.treeData}
               onChange={(treeData) => this.setState({ treeData })}
               dndType={externalNodeType}
             />
           </div>
-          {/* <div style={{ height: 300 }}>
-            <SortableTree
-              isVirtualized={false}
-              treeData={this.state.treeData}
-              onChange={(treeData) => this.setState({ treeData })}
-              dndType={externalNodeType}
-            />
-          </div> */}
           <YourExternalNodeComponent node={{ title: 'Baby Rabbit' }} />← drag this
         </div>
       </DndProvider>

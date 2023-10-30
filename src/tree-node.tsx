@@ -4,10 +4,6 @@ import { TreeRendererProps } from './models';
 import './tree-node.css';
 
 class TreeNode extends React.Component<TreeRendererProps> {
-  // constructor(props) {
-  //   super(props);
-  // }
-
   // eslint-disable-next-line react/static-property-placement
   static defaultProps = {
     swapFrom: null,

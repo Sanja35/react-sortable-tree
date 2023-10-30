@@ -766,7 +766,6 @@ export class ReactSortableTree<T> extends Component<
       style,
       className,
       innerStyle,
-      // rowHeight,
       isVirtualized,
       placeholderRenderer,
       virtuosoProps,
@@ -781,8 +780,6 @@ export class ReactSortableTree<T> extends Component<
       draggedMinimumTreeIndex,
       instanceProps,
     } = this.state;
-
-    // console.log('render', rowHeight);
 
     const treeData = this.state.draggingTreeData || instanceProps.treeData;
     const rowDirectionClass = rowDirection === 'rtl' ? 'rst__rtl' : null;
@@ -815,24 +812,9 @@ export class ReactSortableTree<T> extends Component<
     });
 
     // Seek to the focused search result if there is one specified
-    // const scrollToInfo =
-    //   searchFocusTreeIndex !== null ? { scrollToIndex: searchFocusTreeIndex } : {};
     if (searchFocusTreeIndex !== null) {
       this.listRef?.current?.scrollToIndex({ index: searchFocusTreeIndex, align: 'center' });
     }
-
-    // const getRowHeight = (row: IWalkCallbackParams<T>, index: number) => {
-    //   if (typeof rowHeight !== 'function') {
-    //     return rowHeight;
-    //   }
-
-    //   return rowHeight({
-    //     index,
-    //     treeIndex: index,
-    //     node: row.node,
-    //     path: row.path,
-    //   });
-    // };
 
     let containerStyle = style;
     let list: JSX.Element | JSX.Element[];
@@ -861,7 +843,6 @@ export class ReactSortableTree<T> extends Component<
           itemContent={(index) =>
             this.renderRow(rows[index], {
               listIndex: index,
-              // style: { height: getRowHeight(rows[index], index) },
               getPrevRow: () => rows[index - 1] || null,
               matchKeys,
               swapFrom,
@@ -877,7 +858,6 @@ export class ReactSortableTree<T> extends Component<
       list = rows.map((row, index) =>
         this.renderRow(row, {
           listIndex: index,
-          // style: { height: getRowHeight(row, index) },
           getPrevRow: () => rows[index - 1] || null,
           matchKeys,
           swapFrom,
