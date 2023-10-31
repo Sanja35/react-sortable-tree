@@ -5,7 +5,7 @@ import withScrolling, {
 import isEqual from 'lodash.isequal';
 import React, { Component } from 'react';
 import { DndComponentClass, DndContext, DndProvider } from 'react-dnd';
-import { DragDropManager, Unsubscribe } from 'dnd-core';
+import type { DragDropManager, Unsubscribe } from 'dnd-core';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Virtuoso, VirtuosoHandle, VirtuosoProps } from 'react-virtuoso';
 import NodeRendererDefault from './node-renderer-default';
